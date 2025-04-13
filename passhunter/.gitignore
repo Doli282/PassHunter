@@ -1,0 +1,18 @@
+# Ignore virtual environment
+venv_passhunter/
+
+# Ignore environment variables
+.env
+
+# Ignore .vscode
+.vscode/
+
+# Ignore .idea
+.idea/
+
+# Ignore pycache
+__pycache__/
+
+# Ignore .pytest_cache
+.pytest_cache/
+
