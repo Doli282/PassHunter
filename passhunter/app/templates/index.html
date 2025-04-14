@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Home - PassHunter{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1>Welcome to PassHunter</h1>
+    <p class="lead">Monitor your domains for credentials leaks.</p>
+</div>
+
+<div class="features">
+    <div class="card">
+        <h2>Domain Monitoring</h2>
+        <p>Keep track of your domains and receive alerts when credentials leaks are detected.</p>
+    </div>
+
+    <div class="card">
+        <h2>Watchlist Management</h2>
+        <p>Create and manage multiple watchlists to organize your domains effectively.</p>
+    </div>
+
+    <div class="card">
+        <h2>Real-time Alerts</h2>
+        <p>Get notified immediately when credentials leaks are detected.</p>
+    </div>
+</div>
+{% endblock %}

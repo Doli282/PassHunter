@@ -1,0 +1,119 @@
+/* Watchlist Styles */
+.watchlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.watchlist-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.watchlist-card h2 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.watchlist-card .description {
+    color: var(--text-light);
+    margin-bottom: var(--spacing-md);
+    flex-grow: 1;
+}
+
+.watchlist-stats {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+}
+
+.watchlist-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: auto;
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-light);
+    grid-column: 1 / -1;
+}
+
+/* Watchlist Detail Styles */
+.watchlist-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+}
+
+.watchlist-detail-header h1 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.watchlist-detail-header .description {
+    color: var(--text-light);
+}
+
+.domains-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.domains-table th,
+.domains-table td {
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.domains-table th {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: bold;
+}
+
+.domains-table tr:last-child td {
+    border-bottom: none;
+}
+
+.domains-table .actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+}
+
+.status-badge.active {
+    background-color: #2ecc71;
+    color: var(--white);
+}
+
+.status-badge.inactive {
+    background-color: #e74c3c;
+    color: var(--white);
+}
+
+.status-badge.pending {
+    background-color: #f1c40f;
+    color: var(--white);
+}

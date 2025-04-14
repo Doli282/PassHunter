@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ watchlist.name }} - PassHunter{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="watchlist-details">
+    <div class="watchlist-header">
+        <h1>{{ watchlist.name }}</h1>
+        <div class="watchlist-actions">
+            <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}" class="btn">Edit</a>
+            <a href="{{ url_for('watchlist.confirm_delete_watchlist', watchlist_id=watchlist.id) }}"
+                class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+
+    <div class="watchlist-info">
+        <p><strong>Description:</strong> {{ watchlist.description }}</p>
+        <p><strong>Status:</strong> {{ 'Active' if watchlist.is_active else 'Inactive' }}</p>
+        {% if watchlist.mail_address %}
+        <p><strong>Notification Email:</strong> {{ watchlist.mail_address }}</p>
+        <p><strong>Email Alerts:</strong> {{ 'Enabled' if watchlist.mail_alerts else 'Disabled' }}</p>
+        {% endif %}
+    </div>
+
+    <div class="domains-section">
+        <h2>Monitored Domains</h2>
+
+        <form method="POST" action="{{ url_for('watchlist.add_domain', watchlist_id=watchlist.id) }}"
+            class="add-domain-form">
+            {{ add_domain_form.csrf_token }}
+            <div class="form-group">
+                {{ add_domain_form.domain.label }}
+                {{ add_domain_form.domain(class="form-control") }}
+                {% if add_domain_form.domain.errors %}
+                <div class="error-message">
+                    {% for error in add_domain_form.domain.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {{ add_domain_form.submit(class="btn") }}
+        </form>
+
+        {% if watchlist.domains %}
+        <div class="domains-list">
+            {% for domain in watchlist.domains %}
+            <div class="domain-item">
+                <span>{{ domain.name }}</span>
+                <a href="{{ url_for('watchlist.confirm_delete_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"
+                    class="btn btn-danger btn-sm">Remove</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-domains">No domains are being monitored in this watchlist.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

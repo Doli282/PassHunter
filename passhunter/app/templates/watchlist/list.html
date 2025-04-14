@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Watchlists - PassHunter{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="watchlist-header">
+    <h1>Your Watchlists</h1>
+    <a href="{{ url_for('watchlist.create_watchlist') }}" class="btn">Create New Watchlist</a>
+</div>
+
+<div class="watchlist-grid">
+    {% for watchlist in watchlists %}
+    <div class="card watchlist-card">
+        <h2>{{ watchlist.name }}</h2>
+        <p class="description">{{ watchlist.description }}</p>
+        <div class="watchlist-stats">
+            <span>{{ watchlist.domains|length }} domains</span>
+        </div>
+        <div class="watchlist-actions">
+            <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}" class="btn">View Details</a>
+            <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}" class="btn">Edit</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No watchlists found. Create your first watchlist to start monitoring domains.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
