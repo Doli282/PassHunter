@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PassHunter{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <header>
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
+                </div>
+                <ul class="navbar-menu">
+                    <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
+                    <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="container">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <small>MIT license. Open source. No warranty. Use at own risk.</small>
+                <address>
+                    Contact administrator: <a href="mailto:yourname@localhost">yourname@localhost</a>
+                </address>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
