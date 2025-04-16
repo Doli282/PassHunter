@@ -1,5 +1,6 @@
 """Views for the watchlist page of the PassHunter web application."""
 from flask import render_template, redirect, url_for, flash
+from app.models.alert import Alert
 from app.models.watchlist import Watchlist
 from app.models.domain import Domain
 from app.extensions import db
@@ -34,6 +35,9 @@ def view_watchlist(watchlist_id: int):
     """
     watchlist = Watchlist.query.get_or_404(watchlist_id)
     add_domain_form = AddDomainForm()
+    alerts = []
+    for domain in watchlist.domains:
+        alerts += Alert.query.filter_by(domain_id=domain.id).all()
     return render_template(
         'watchlist/view.html',
         watchlist=watchlist,
