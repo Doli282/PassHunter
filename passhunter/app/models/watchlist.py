@@ -1,5 +1,6 @@
 """Models for the PassHunter web application. - Watchlists"""
 from app.extensions import db
+from app.models.watchlists_domains_association import watchlist_domain_association
 
 class Watchlist(db.Model):
     """Watchlist model for the PassHunter web application."""
@@ -12,7 +13,7 @@ class Watchlist(db.Model):
     mail_address = db.Column(db.String(255), nullable=True, comment='Email address to send alerts to')
     mail_alerts = db.Column(db.Boolean, default=True, comment='Whether to send email alerts for this watchlist')
 
-    domains = db.relationship('Domain', secondary='watchlist_domain_association', backref='watchlists', lazy=True)
+    domains = db.relationship('Domain', secondary=watchlist_domain_association, back_populates='watchlists', lazy=True)
 
     def __repr__(self):
         """Represent the Watchlist model as a string."""
