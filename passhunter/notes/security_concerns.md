@@ -4,8 +4,8 @@
 
 ### Login page - mitigated
 
-The application supports redirects to previously asked resource if login was invoked as a result of an attempt to access resource requiring authentication.
-The redirect URL must not contain domain name.
+The application supports redirects to a previously requested resource if login was invoked as a result of an attempt to access resource requiring authentication.
+The redirect URL must not contain a domain name.
 It must be a relative path.
 
 This prevents URL Redirects attacks.
@@ -14,7 +14,7 @@ However, the application does not use this feature anywhere.
 
 ## Enumeration
 
-### Registration page - accepted
+### Registration page -- accepted
 
 The registration page enables enumeration of email addresses of registered accounts.
 There is a warning message when a new user wants to register with an email address that is already taken.
