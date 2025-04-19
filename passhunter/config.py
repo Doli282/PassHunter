@@ -11,3 +11,6 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    WATCHLISTS_PER_PAGE = 25
+    DOMAINS_PER_PAGE = 25
+    ALERTS_PER_PAGE = 25
