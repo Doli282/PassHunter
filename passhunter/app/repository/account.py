@@ -29,7 +29,7 @@ def get_by_id_404(account_id: int) -> Account:
     Raises:
         404: If the account is not found
     """
-    return db.get_or_404(Account, id=account_id)
+    return db.get_or_404(Account, ident=account_id)
 
 
 def get_by_mail(email: str) -> Account | None:
