@@ -15,11 +15,11 @@ class Account(db.Model, UserMixin):
     __tablename__ = 'account'
     __table_args__ = {'comment': 'Registered accounts'}
     id: db.Mapped[int] = db.mapped_column(db.Integer, primary_key=True, comment='Account ID')
-    email: db.Mapped[str] = db.mapped_column(db.String(256), nullable=False, unique=True, index=True,
+    email: db.Mapped[str] = db.mapped_column(db.String(255), nullable=False, unique=True, index=True,
                                              comment='Email address for the account')
-    name: db.Mapped[Optional[str]] = db.mapped_column(db.String(256), nullable=True, unique=False,
+    name: db.Mapped[Optional[str]] = db.mapped_column(db.String(255), nullable=True, unique=False,
                                                       comment="Account's name")
-    password_hash: db.Mapped[str] = db.mapped_column(db.String(256), nullable=False, unique=False,
+    password_hash: db.Mapped[str] = db.mapped_column(db.String(255), nullable=False, unique=False,
                                                      comment='Password hash')
 
     watchlists: db.Mapped[List["Watchlist"]] = db.relationship('Watchlist', back_populates='account', lazy=True,
