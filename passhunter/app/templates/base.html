@@ -11,32 +11,53 @@
 </head>
 
 <body>
-    <div class="page-wrapper">
-        <header>
-            <nav class="navbar">
-                <div class="navbar-brand">
-                    <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
-                </div>
-                <ul class="navbar-menu">
-                    <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
-                    <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <main class="container">
-            {% block content %}{% endblock %}
-        </main>
-
-        <footer class="footer">
-            <div class="footer-content">
-                <small>MIT license. Open source. No warranty. Use at own risk.</small>
-                <address>
-                    Contact administrator: <a href="mailto:yourname@localhost">yourname@localhost</a>
-                </address>
+<div class="page-wrapper">
+    <header>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
             </div>
-        </footer>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
+                <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
+                {% if current_user.is_anonymous %}
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('profile.profile', account_id=current_user.id) }}" class="nav-item"></a>Profile
+                    </li>
+                    <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div>
+        <!-- https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
+
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <small>MIT license. Open source. No warranty. Use at own risk.</small>
+            <address>
+                Contact administrator: <a href="mailto:yourname@localhost">yourname@localhost</a>
+            </address>
+        </div>
+    </footer>
+</div>
 </body>
 
 </html>

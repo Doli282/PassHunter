@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - PassHunter{% endblock %}
+
+{% block content %}
+    <h1>Profile information</h1>
+    <dl>
+        {% for key, value in account.account_info() %}
+            <dt>{{ key }}</dt>
+            <dd>{{ value }}</dd>
+        {% endfor %}
+    </dl>
+{% endblock %}

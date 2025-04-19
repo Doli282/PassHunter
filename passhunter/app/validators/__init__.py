@@ -4,7 +4,7 @@ from sqlalchemy import select
 from wtforms.validators import ValidationError
 
 from app import db
-from app.models.user import User
+from app.models.account import Account
 
 
 def validate_email(form: FlaskForm, email: str) -> None:
@@ -19,7 +19,7 @@ def validate_email(form: FlaskForm, email: str) -> None:
     Raises:
         ValidationError: If email is already registered
     """
-    user = db.session.scalar(select(User).where(
-        User.email == email.data))
-    if user is not None:
+    account = db.session.scalar(select(Account).where(
+        Account.email == email.data))
+    if account is not None:
         raise ValidationError('Please use a different email address.')
