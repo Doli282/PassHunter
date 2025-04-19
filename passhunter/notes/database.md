@@ -30,8 +30,8 @@ There may be many domains added to one watchlist.
 
 Domains denote registered domains for monitoring.
 One domain can be present in many watchlists.
-Domains are shared and each domain is defined only once in the database to save resources.
-Same domains are not repeated and occupy only one row in the table.
+Domains are shared, and each domain is defined only once in the database to save resources.
+The same domains are not repeated and occupy only one row in the table.
 More importantly, searches are not repeated during monitoring. 
 A domain instance in the database can be created by any user.
 There is no lookup tool to query defined domains.

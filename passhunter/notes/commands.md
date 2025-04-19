@@ -14,25 +14,15 @@ pip install python-dotenv
 #pip install sqlalchemy-utils
 ```
 
-
 ## Database operations
 
-Database initialization
 ```shell
+# Database initialization
 flask db init
-```
-
-Database migration
-```shell
-flask db migrate -m "message  - migration chagnes"
-```
-
-Database upgrade
-```shell
+# Database migration
+flask db migrate -m "message  - migration changes"
+# Database upgrade
 flask db upgrade
-```
-
-Database downgrade
-```shell
+# Database downgrade
 flask db downgrade
 ```
