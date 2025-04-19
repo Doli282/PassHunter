@@ -1,0 +1,44 @@
+---
+#name: 'passhunter'
+
+services:
+#  web:
+#    container_name: web
+#    hostname: web
+#    build:
+#      context: ./passhunter
+#      dockerfile: Dockerfile
+#    networks:
+#      - hunter-network
+#    ports:
+#      - "5000:5000"
+#    env_file:
+#      - ./passhunter/.env
+#    depends_on:
+#      db:
+#        condition: service_healthy
+
+  db:
+    container_name: db
+    hostname: db
+    image: docker.io/library/postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      #- ./postgres/data:/var/lib/postgresql/data/
+    networks:
+      - hunter-network
+    env_file:
+      - ./postgres/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  postgres_data:
+
+networks:
+  hunter-network:
+    driver: bridge
