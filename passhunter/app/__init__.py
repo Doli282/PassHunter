@@ -11,8 +11,13 @@ def create_app():
     app.config.from_object(Config)
 
     # Initialize extensions
+    # Initialize Flask-SQLAlchemy
     db.init_app(app)
     migrate.init_app(app, db)
+    with app.app_context():
+        db.create_all()
+
+    # Initialize Flask-Login
     login.init_app(app)
     login.login_view = 'auth.login'
     # TODO look at other security settings
@@ -28,5 +33,8 @@ def create_app():
 
     from app.web.watchlist import bp as watchlist_bp
     app.register_blueprint(watchlist_bp)
+
+    from app.web.profile import bp as profile_bp
+    app.register_blueprint(profile_bp)
 
     return app

@@ -7,7 +7,7 @@ from app.models.watchlists_domains_association import watchlist_domain_associati
 if TYPE_CHECKING:
     from app.models.alert import Alert
     from app.models.domain import Domain
-    from app.models.user import User
+    from app.models.account import Account
 
 
 class Watchlist(db.Model):
@@ -15,8 +15,8 @@ class Watchlist(db.Model):
     __tablename__ = 'watchlist'
     __table_args__ = {'comment': 'Watchlists are used to group monitored domains'}
     id: db.Mapped[int] = db.mapped_column(db.Integer, primary_key=True, comment='Watchlist ID')
-    user_id: db.Mapped[int] = db.mapped_column(db.Integer, db.ForeignKey('user.id'), primary_key=True,
-                                               comment='User ID')
+    account_id: db.Mapped[int] = db.mapped_column(db.Integer, db.ForeignKey('account.id'), nullable=False,
+                                                  comment='Account ID')
     name: db.Mapped[str] = db.mapped_column(db.String(256), nullable=False, unique=True, comment='Watchlist name')
     description: db.Mapped[Optional[str]] = db.mapped_column(db.Text, nullable=True, unique=False,
                                                              comment='Watchlist description')
@@ -27,13 +27,11 @@ class Watchlist(db.Model):
     send_alerts: db.Mapped[bool] = db.mapped_column(db.Boolean, default=True, nullable=False, unique=False,
                                                     comment='Whether to send email alerts for this watchlist')
 
-    user: db.Mapped["User"] = db.relationship(back_populates='watchlists', lazy=True)
+    account: db.Mapped["Account"] = db.relationship(back_populates='watchlists', lazy=True)
     domains: db.Mapped[Set["Domain"]] = db.relationship(secondary=watchlist_domain_association,
                                                         back_populates='watchlists', lazy=True)
     alerts: db.Mapped[List["Alert"]] = db.relationship(back_populates='watchlist', lazy=True,
                                                        cascade='delete, delete-orphan')
-
-    db.UniqueConstraint('id', 'user_id', name='uq_watchlist_user')
 
     def __repr__(self):
         """Represent the Watchlist model as a string."""

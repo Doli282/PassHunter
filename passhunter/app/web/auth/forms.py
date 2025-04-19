@@ -17,14 +17,14 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    """Form for registering a new user"""
+    """Form for registering a new account"""
     email = EmailField('Email', validators=[DataRequired(), Length(max=255,
                                                                    message='The maximal length of accepted input is 255 characters.'),
                                             Email(message='Input must adhere to email structure.'), validate_email],
                        description='Email address for logging in')
     name = StringField('Name', validators=[Optional(), Length(max=255,
                                                               message='The maximal length of accepted input is 255 characters.')],
-                       description='Name of the user')
+                       description='Name of the account')
     password = PasswordField('Password', validators=[DataRequired()], description='Password to log in')
     password_confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password',
                                                                                              message="Provided passwords must be the same.")],
