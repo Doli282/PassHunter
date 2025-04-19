@@ -14,6 +14,10 @@ pip install python-dotenv
 #pip install sqlalchemy-utils
 ```
 
+```shell
+pip freeze > requirements.txt
+```
+
 ## Database operations
 
 ```shell
