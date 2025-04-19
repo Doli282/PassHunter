@@ -14,7 +14,7 @@ class Domain(db.Model):
     __tablename__ = 'domain'
     __table_args__ = {'comment': 'Monitored domains'}
     id: db.Mapped[int] = db.mapped_column(db.Integer, primary_key=True, comment='Domain ID')
-    name: db.Mapped[str] = db.mapped_column(db.String(256), nullable=False, unique=True, comment='Domain name')
+    name: db.Mapped[str] = db.mapped_column(db.String(255), nullable=False, unique=True, comment='Domain name')
 
     alerts: db.Mapped[List["Alert"]] = db.relationship(back_populates='domain', lazy=True,
                                                        cascade='delete, delete-orphan')

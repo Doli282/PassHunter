@@ -55,7 +55,7 @@ def create(form: RegistrationForm) -> Account:
         Account: New account
     """
     account = Account()
-    account.email = form.email.data,
+    account.email = form.email.data
     account.name = form.name.data
     set_password(account, form.password.data)
     db.session.add(account)

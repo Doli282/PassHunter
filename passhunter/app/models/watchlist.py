@@ -17,12 +17,12 @@ class Watchlist(db.Model):
     id: db.Mapped[int] = db.mapped_column(db.Integer, primary_key=True, comment='Watchlist ID')
     account_id: db.Mapped[int] = db.mapped_column(db.Integer, db.ForeignKey('account.id'), nullable=False,
                                                   comment='Account ID')
-    name: db.Mapped[str] = db.mapped_column(db.String(256), nullable=False, unique=True, comment='Watchlist name')
+    name: db.Mapped[str] = db.mapped_column(db.String(255), nullable=False, unique=True, comment='Watchlist name')
     description: db.Mapped[Optional[str]] = db.mapped_column(db.Text, nullable=True, unique=False,
                                                              comment='Watchlist description')
     is_active: db.Mapped[bool] = db.mapped_column(db.Boolean, default=True, nullable=False, unique=False,
                                                   comment='Whether the watchlist is active or not')
-    email: db.Mapped[Optional[str]] = db.mapped_column(db.String(256), nullable=True, unique=False,
+    email: db.Mapped[Optional[str]] = db.mapped_column(db.String(255), nullable=True, unique=False,
                                                        comment='Email address to send alerts to')
     send_alerts: db.Mapped[bool] = db.mapped_column(db.Boolean, default=True, nullable=False, unique=False,
                                                     comment='Whether to send email alerts for this watchlist')
