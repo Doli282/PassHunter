@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login
 from app.models.account import Account
 from app.web.auth.forms import RegistrationForm
+from app.web.profile.forms import EditAccountForm
 
 
 @login.user_loader
@@ -63,7 +64,21 @@ def create(form: RegistrationForm) -> Account:
     return account
 
 
-# TODO update
+def update(account: Account, form: EditAccountForm) -> Account:
+    """
+    Edit an account
+
+    Args:
+        account (Account): Account to be updated
+        form (EditAccountForm): Edit account form
+    Returns:
+        Account: Updated account
+    """
+    account.name = form.name.data
+    db.session.add(account)
+    db.session.commit()
+    return account
+
 # TODO delete
 
 def set_password(account: Account, password: str) -> Account:

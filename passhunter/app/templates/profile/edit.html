@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - PassHunter{% endblock %}
+
+{% block content %}
+<h1>Edit Profile</h1>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}
+            {{ form.name }}
+            {% for error in form.name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.submit }}
+        </p>
+    </form>
+    <a href="{{ url_for('profile.profile') }}">Cancel</a>
+{% endblock %}
