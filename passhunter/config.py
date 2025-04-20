@@ -14,3 +14,11 @@ class Config(object):
     WATCHLISTS_PER_PAGE = 25
     DOMAINS_PER_PAGE = 25
     ALERTS_PER_PAGE = 25
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = int(os.getenv('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS') is not None
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    ADMINS = ['DolanskyL@email.cz']
+    LOGGING_DIR = 'logs'
+    LOGGING_FILE = 'passhunter.log'
