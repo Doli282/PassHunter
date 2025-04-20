@@ -2,6 +2,7 @@
 from flask import Flask
 
 from app.extensions import db, migrate, login
+from app.tools.logs import set_mail_error_reporting, set_rotating_log_file
 from config import Config
 
 
@@ -25,6 +26,9 @@ def create_app():
     login.session_protection = 'strong'
 
     # Register the blueprints
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
     from app.web.index import bp as home_bp
     app.register_blueprint(home_bp)
 
@@ -36,5 +40,13 @@ def create_app():
 
     from app.web.profile import bp as profile_bp
     app.register_blueprint(profile_bp)
+
+    # Set logging handlers
+    if not app.debug:
+        set_mail_error_reporting(app)
+        set_rotating_log_file(app)
+
+        app.logger.setLevel('INFO')
+        app.logger.info('PassHunter has started')
 
     return app
