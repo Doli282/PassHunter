@@ -1,23 +1,30 @@
 """Views for the profile page of the PassHunter web application."""
-from flask import render_template
-from flask_login import login_required
+from flask import render_template, flash, redirect, url_for, Response, request
+from flask_login import login_required, current_user
 
 from app.repository import account as account_repository
 from app.web.profile import bp
+from app.web.profile.forms import EditAccountForm
 
 
-@bp.route('/profile/<int:account_id>')
+@bp.route('/profile')
 @login_required
-def profile(account_id: int) -> str:
+def profile() -> str:
     """
     Render the profile page.
 
-    Args:
-        account_id (int): The account ID.
     Returns:
         str: The rendered profile page.
-    Raises:
-        404: If the account ID is not found.
     """
-    account = account_repository.get_by_id_404(account_id)
-    return render_template('profile/profile.html', account=account)
+    return render_template('profile/profile.html')
+
+@bp.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit() -> str|Response:
+    form = EditAccountForm(obj=current_user)
+    if form.validate_on_submit():
+        account_repository.update(current_user, form)
+        flash('Your changes have been saved.')
+        return redirect(url_for('profile.profile'))
+    return render_template('profile/edit.html', form=form)
+

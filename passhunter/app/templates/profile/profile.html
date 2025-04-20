@@ -5,9 +5,10 @@
 {% block content %}
     <h1>Profile information</h1>
     <dl>
-        {% for key, value in account.account_info().items() %}
+        {% for key, value in current_user.account_info().items() %}
             <dt>{{ key }}</dt>
             <dd>{{ value }}</dd>
         {% endfor %}
     </dl>
+    <a href="{{ url_for('profile.edit') }}">Edit profile</a>
 {% endblock %}
