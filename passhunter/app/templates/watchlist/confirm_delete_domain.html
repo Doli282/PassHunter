@@ -3,28 +3,28 @@
 {% block title %}Confirm Domain Removal - PassHunter{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="confirmation-page">
-    <h1>Confirm Domain Removal</h1>
+    <div class="confirmation-page">
+        <h1>Confirm Domain Removal</h1>
 
-    <div class="warning-message">
-        <h2>Warning!</h2>
-        <p>You are about to remove the domain <strong>{{ domain.name }}</strong> from the watchlist <strong>{{
-                watchlist.name }}</strong>.</p>
-        <p>This action cannot be undone. Are you sure you want to proceed?</p>
-    </div>
-
-    <form method="POST"
-        action="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"
-        class="delete-form">
-        {{ form.csrf_token }}
-        <div class="form-actions">
-            <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}" class="btn">Cancel</a>
-            {{ form.submit(class="btn btn-danger") }}
+        <div class="warning-message">
+            <h2>Warning!</h2>
+            <p>You are about to remove the domain <strong>{{ domain.name }}</strong> from the watchlist
+                <strong>{{ watchlist.name }}</strong>.</p>
+            <p>This action cannot be undone. Are you sure you want to proceed?</p>
         </div>
-    </form>
-</div>
+
+        <form method="POST"
+              action="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"
+              class="delete-form">
+            {{ form.csrf_token }}
+            <div class="form-actions">
+                <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}" class="btn">Cancel</a>
+                {{ form.submit(class="btn btn-danger") }}
+            </div>
+        </form>
+    </div>
 {% endblock %}

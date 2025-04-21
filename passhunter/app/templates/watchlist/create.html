@@ -3,69 +3,69 @@
 {% block title %}Create Watchlist - PassHunter{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="watchlist-form">
-    <h1>Create New Watchlist</h1>
+    <div class="watchlist-form">
+        <h1>Create New Watchlist</h1>
 
-    <form method="POST" action="{{ url_for('watchlist.create_watchlist') }}">
-        {{ form.csrf_token }}
+        <form method="POST" action="{{ url_for('watchlist.create_watchlist') }}">
+            {{ form.csrf_token }}
 
-        <div class="form-group">
-            {{ form.name.label }}
-            {{ form.name(class="form-control") }}
-            {% if form.name.errors %}
-            <div class="error-message">
-                {% for error in form.name.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
+            <div class="form-group">
+                {{ form.name.label }}
+                {{ form.name(class="form-control") }}
+                {% if form.name.errors %}
+                    <div class="error-message">
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
 
-        <div class="form-group">
-            {{ form.description.label }}
-            {{ form.description(class="form-control") }}
-            {% if form.description.errors %}
-            <div class="error-message">
-                {% for error in form.description.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
+            <div class="form-group">
+                {{ form.description.label }}
+                {{ form.description(class="form-control") }}
+                {% if form.description.errors %}
+                    <div class="error-message">
+                        {% for error in form.description.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
 
-        <div class="form-group">
-            {{ form.is_active.label }}
-            {{ form.is_active(class="form-check-input") }}
-            <small class="form-text text-muted">{{ form.is_active.description }}</small>
-        </div>
-
-        <div class="form-group">
-            {{ form.mail_address.label }}
-            {{ form.mail_address(class="form-control") }}
-            <small class="form-text text-muted">{{ form.mail_address.description }}</small>
-            {% if form.mail_address.errors %}
-            <div class="error-message">
-                {% for error in form.mail_address.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
+            <div class="form-group">
+                {{ form.is_active.label }}
+                {{ form.is_active(class="form-check-input") }}
+                <small class="form-text text-muted">{{ form.is_active.description }}</small>
             </div>
-            {% endif %}
-        </div>
 
-        <div class="form-group">
-            {{ form.mail_alerts.label }}
-            {{ form.mail_alerts(class="form-check-input") }}
-            <small class="form-text text-muted">{{ form.mail_alerts.description }}</small>
-        </div>
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+                <small class="form-text text-muted">{{ form.email.description }}</small>
+                {% if form.email.errors %}
+                    <div class="error-message">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
 
-        <div class="form-actions">
-            <a href="{{ url_for('watchlist.list_watchlists') }}" class="btn">Cancel</a>
-            {{ form.submit(class="btn") }}
-        </div>
-    </form>
-</div>
+            <div class="form-group">
+                {{ form.mail_alerts.label }}
+                {{ form.mail_alerts(class="form-check-input") }}
+                <small class="form-text text-muted">{{ form.mail_alerts.description }}</small>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('watchlist.list_watchlists') }}" class="btn">Cancel</a>
+                {{ form.submit(class="btn") }}
+            </div>
+        </form>
+    </div>
 {% endblock %}
