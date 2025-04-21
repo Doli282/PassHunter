@@ -6,25 +6,70 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Your Watchlists</h1>
-    <a href="{{ url_for('watchlist.create_watchlist') }}" class="btn">Create New Watchlist</a>
+    <h1>Watchlists</h1>
 
-    {% for watchlist in watchlists %}
-        <div class="card watchlist-card">
-            <h2>{{ watchlist.name }}</h2>
-            <p class="description">{{ watchlist.description }}</p>
-            <div class="watchlist-stats">
-                <span>{{ watchlist.domains|length }} domains</span>
+    {% if watchlists %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Alerts</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for watchlist in watchlists %}
+                    <tr>
+                        <td>{{ watchlist.name }}</td>
+                        <td>
+                            {% if watchlist.description %}
+                                {% if watchlist.description|length > 30 %}
+                                    {{ watchlist.description[:30] }}...
+                                {% else %}
+                                    {{ watchlist.description }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{{ alert_stats[watchlist.id]['alert_count'] }}</td>
+                        <td>
+                            {% if alert_stats[watchlist.id]['has_new_alerts'] %}
+                                <span class="new-alert-indicator">!</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pagination.pages > 1 %}
+            <div class="pagination">
+                {% if pagination.has_prev %}
+                    <a href="{{ url_for('watchlist.list_watchlists', page=pagination.prev_num) }}">&laquo; Previous</a>
+                {% else %}
+                    <span class="disabled">&laquo; Previous</span>
+                {% endif %}
+
+                {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num == pagination.page %}
+                            <span class="active">{{ page_num }}</span>
+                        {% else %}
+                            <a href="{{ url_for('watchlist.list_watchlists', page=page_num) }}">{{ page_num }}</a>
+                        {% endif %}
+                    {% else %}
+                        <span>...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                    <a href="{{ url_for('watchlist.list_watchlists', page=pagination.next_num) }}">Next &raquo;</a>
+                {% else %}
+                    <span class="disabled">Next &raquo;</span>
+                {% endif %}
             </div>
-            <div class="watchlist-actions">
-                <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}" class="btn">View
-                    Details</a>
-                <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}" class="btn">Edit</a>
-            </div>
-        </div>
+        {% endif %}
     {% else %}
-        <div class="empty-state">
-            <p>No watchlists found. Create your first watchlist to start monitoring domains.</p>
-        </div>
-    {% endfor %}
+        <p>You don't have any watchlists yet.</p>
+    {% endif %}
 {% endblock %}
