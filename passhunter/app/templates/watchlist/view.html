@@ -3,10 +3,12 @@
 {% block title %}{{ watchlist.name }} - PassHunter{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/watchlist.css') }}">
 {% endblock %}
 
 {% block content %}
+    <h1>Watchlist - {{ watchlist.name }}</h1>
+
+
     <div class="watchlist-details">
         <div class="watchlist-header">
             <h1>{{ watchlist.name }}</h1>
@@ -57,7 +59,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="no-domains">No domains are being monitored in this watchlist.</p>
+                <p><i>No domains are being monitored in this watchlist.</i></p>
             {% endif %}
         </div>
     </div>

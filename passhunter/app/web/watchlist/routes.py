@@ -27,15 +27,27 @@ def list_watchlists() -> str:
         str: The watchlist list template.
     """
     page = request.args.get('page', 1, type=int)
-
-    # Get watchlists with alert stats for the current user
-    watchlists_pagination, alert_stats = watchlist_repository.get_by_account_id_with_stats(
-        current_user.id, page
-    )
-
+    pagination = watchlist_repository.get_page(page)
     return render_template(
         'watchlist/list.html',
-        watchlists=watchlists_pagination.items,
-        pagination=watchlists_pagination,
-        alert_stats=alert_stats
+        pagination=pagination
     )
+
+# TODO view one watchlist
+
+
+@bp.route('/watchlists/create', methods=['GET', 'POST'])
+@login_required
+def create() -> str|Response:
+    """
+    Create a new watchlist for the current user.
+
+    Returns:
+        str|Response: The 'watchlist create' template or redirection to the watchlist list.
+    """
+    form = WatchlistForm()
+    if form.validate_on_submit():
+        watchlist_repository.create(form, current_user)
+        flash(f'Watchlist "{form.name.data}" created successfully.', 'success')
+        return redirect(url_for('watchlist.list_watchlists'))
+    return render_template('watchlist/create.html', form=form)
