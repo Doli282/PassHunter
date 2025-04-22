@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
 {% block title %}Watchlists - PassHunter{% endblock %}
 
@@ -7,8 +8,10 @@
 
 {% block content %}
     <h1>Watchlists</h1>
-
-    {% if watchlists %}
+    <p>Here you can manage your watchlists.</p>
+    <a href="{{ url_for('watchlist.create') }}">Create New Watchlist</a>
+    {% if pagination.items %}
+        {# Table with individual watchlists #}
         <table>
             <thead>
                 <tr>
@@ -19,57 +22,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for watchlist in watchlists %}
+                {% for watchlist in pagination.items %}
                     <tr>
                         <td>{{ watchlist.name }}</td>
                         <td>
-                            {% if watchlist.description %}
-                                {% if watchlist.description|length > 30 %}
-                                    {{ watchlist.description[:30] }}...
-                                {% else %}
-                                    {{ watchlist.description }}
-                                {% endif %}
-                            {% endif %}
+                            {{ watchlist.description }}
                         </td>
-                        <td>{{ alert_stats[watchlist.id]['alert_count'] }}</td>
-                        <td>
-                            {% if alert_stats[watchlist.id]['has_new_alerts'] %}
-                                <span class="new-alert-indicator">!</span>
-                            {% endif %}
-                        </td>
+                        <td>##</td>
+                        <td>XX</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        {% if pagination.pages > 1 %}
-            <div class="pagination">
-                {% if pagination.has_prev %}
-                    <a href="{{ url_for('watchlist.list_watchlists', page=pagination.prev_num) }}">&laquo; Previous</a>
-                {% else %}
-                    <span class="disabled">&laquo; Previous</span>
-                {% endif %}
-
-                {% for page_num in pagination.iter_pages() %}
-                    {% if page_num %}
-                        {% if page_num == pagination.page %}
-                            <span class="active">{{ page_num }}</span>
-                        {% else %}
-                            <a href="{{ url_for('watchlist.list_watchlists', page=page_num) }}">{{ page_num }}</a>
-                        {% endif %}
-                    {% else %}
-                        <span>...</span>
-                    {% endif %}
-                {% endfor %}
-
-                {% if pagination.has_next %}
-                    <a href="{{ url_for('watchlist.list_watchlists', page=pagination.next_num) }}">Next &raquo;</a>
-                {% else %}
-                    <span class="disabled">Next &raquo;</span>
-                {% endif %}
-            </div>
-        {% endif %}
+        {# Pagination #}
+        {{ macros.render_pagination(pagination, 'watchlist.list_watchlists') }}
     {% else %}
-        <p>You don't have any watchlists yet.</p>
+        <p><i>You do not have any watchlists yet.</i></p>
     {% endif %}
 {% endblock %}

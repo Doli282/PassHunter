@@ -11,9 +11,9 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    WATCHLISTS_PER_PAGE = 25
-    DOMAINS_PER_PAGE = 25
-    ALERTS_PER_PAGE = 25
+    WATCHLISTS_PER_PAGE = 1
+    DOMAINS_PER_PAGE = 1
+    ALERTS_PER_PAGE = 1
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = int(os.getenv('MAIL_PORT') or 25)
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS') is not None
