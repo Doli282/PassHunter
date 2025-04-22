@@ -1,14 +1,15 @@
 """Repository for Watchlist"""
 from typing import List, Dict, Any, Tuple
 
+from flask import current_app
 from flask_sqlalchemy.pagination import Pagination
 from sqlalchemy import func, select
 
 from app import db
+from app.models import Account
 from app.models.alert import Alert
 from app.models.watchlist import Watchlist
 from app.web.watchlist.forms import WatchlistForm
-from passhunter import app
 
 
 def get_all() -> List[Watchlist]:
@@ -32,7 +33,7 @@ def get_page(page: int = 1) -> Pagination:
         Pagination: Paginated Watchlists.
     """
     query = db.select(Watchlist)
-    return db.paginate(query, page, app.config['WATCHLISTS_PER_PAGE'])
+    return db.paginate(select=query, page=page, max_per_page=current_app.config['WATCHLISTS_PER_PAGE'])
 
 
 def get_by_id(watchlist_id: int) -> Watchlist:
@@ -47,22 +48,19 @@ def get_by_id(watchlist_id: int) -> Watchlist:
     return db.get_or_404(Watchlist, id=watchlist_id)
 
 
-def create(form: WatchlistForm) -> Watchlist:
+def create(form: WatchlistForm, user: Account) -> Watchlist:
     """
     Create a new Watchlist.
 
     Args:
         form (WatchlistForm): Watchlist form.
+        user (Account): Account - owner of the Watchlist.
     Returns:
         Watchlist: New Watchlist.
     """
-    watchlist = Watchlist(
-        name=form.name.data,
-        description=form.description.data,
-        is_active=form.is_active.data,
-        email=form.email.data,
-        send_alerts=form.send_alerts.data
-    )
+    watchlist = Watchlist()
+    form.populate_obj(watchlist)
+    watchlist.account = user
     db.session.add(watchlist)
     db.session.commit()
     return watchlist
@@ -110,7 +108,7 @@ def get_by_account_id_with_stats(account_id: int, page: int = 1) -> Tuple[Pagina
     """
     # Get paginated watchlists for the account
     query = db.select(Watchlist).filter(Watchlist.account_id == account_id)
-    watchlists_pagination = db.paginate(query, page, app.config['WATCHLISTS_PER_PAGE'])
+    watchlists_pagination = db.paginate(select=query, page=page, max_per_page=current_app.config['WATCHLISTS_PER_PAGE'])
 
     # Get watchlist IDs from the current page
     watchlist_ids = [w.id for w in watchlists_pagination.items]
@@ -125,7 +123,7 @@ def get_by_account_id_with_stats(account_id: int, page: int = 1) -> Tuple[Pagina
         .group_by(Alert.watchlist_id)
     ).all()
 
-    # Get new alert status for each watchlist
+    # Get a new alert status for each watchlist
     new_alerts = db.session.execute(
         select(Alert.watchlist_id, func.count(Alert.id))
         .filter(Alert.watchlist_id.in_(watchlist_ids), Alert.is_new == True)

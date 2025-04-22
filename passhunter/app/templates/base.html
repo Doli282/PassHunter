@@ -12,17 +12,19 @@
 
 <body>
 <div class="page-wrapper">
+    {# Header #}
     <header>
+        {# Navigation bar #}
         <nav class="navbar">
             <div class="navbar-brand">
                 <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
             </div>
             <ul class="navbar-menu">
                 <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
-                <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
                 {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
                 {% else %}
+                    <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
                     <li><a href="{{ url_for('profile.profile') }}"
                            class="nav-item">Profile</a></li>
                     <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
@@ -30,9 +32,9 @@
             </ul>
         </nav>
     </header>
-
+    {# Flashed messages #}
     <div>
-        <!-- https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms -->
+        {# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms #}
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>
@@ -44,11 +46,12 @@
         {% endwith %}
     </div>
 
-
+    {# Main content block #}
     <main class="container">
         {% block content %}{% endblock %}
     </main>
 
+    {# Footer #}
     <footer class="footer">
         <div class="footer-content">
             <small>MIT license. Open source. No warranty. Use at own risk.</small>
