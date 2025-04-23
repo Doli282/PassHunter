@@ -21,6 +21,12 @@ def profile() -> str:
 @bp.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit() -> str|Response:
+    """
+    Edit the user's account information.
+
+    Returns:
+        str|Response: The rendered edit page or a redirect to the profile page.
+    """
     form = EditAccountForm(obj=current_user)
     if form.validate_on_submit():
         account_repository.update(current_user, form)

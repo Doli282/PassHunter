@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-
-{% block title %}Create Watchlist - PassHunter{% endblock %}
+{# Specify if the template is used for creating or editing #}
+{% set title = 'Edit' if watchlist else 'Create' %}
+{% block title %}{{ title }} Watchlist - PassHunter{% endblock %}
 
 {% block extra_css %}
 {% endblock %}
 
 {% block content %}
-        <h1>Create New Watchlist</h1>
+        <h1>{{ title }} Watchlist</h1>
 
-        {# Form to create a new watchlist #}
+        {# Form to edit or to create a new watchlist #}
         <form action="" method="POST">
             {{ form.hidden_tag() }}
             <p>
@@ -50,4 +51,10 @@
                 {{ form.submit }}
             </p>
         </form>
+    {# Differentiate where to return based on action #}
+    {% if watchlist %}
+        <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">Cancel</a>
+    {% else %}
+        <a href="{{ url_for('watchlist.list_watchlists') }}">Cancel</a>
+    {% endif %}
 {% endblock %}

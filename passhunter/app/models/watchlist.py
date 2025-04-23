@@ -36,3 +36,11 @@ class Watchlist(db.Model):
     def __repr__(self):
         """Represent the Watchlist model as a string."""
         return f'<Watchlist id={self.id} name={self.name}>'
+
+    def print_active(self) -> str:
+        """Return the active status of the watchlist."""
+        return 'Active' if self.is_active else 'Inactive'
+
+    def print_send_alerts(self) -> str:
+        """Return the 'send alerts' status of the watchlist."""
+        return 'Enabled' if self.send_alerts else 'Disabled'
