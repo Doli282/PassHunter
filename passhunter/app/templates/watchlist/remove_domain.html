@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Remove domain - PassHunter{% endblock %}
+
+{% block content %}
+    <h1>Remove Domain {{ domain.name }} from {{ watchlist.name }}</h1>
+    <p>Are you sure you want to remove this domain from the watchlist?</p>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.submit() }}
+    </form>
+    <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">Cancel</a>
+{% endblock %}
