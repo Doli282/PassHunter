@@ -1,8 +1,9 @@
 """Views for the profile page of the PassHunter web application."""
 from flask import render_template, flash, redirect, url_for, Response, request
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 
 from app.repository import account as account_repository
+from app.web import EmptyForm
 from app.web.profile import bp
 from app.web.profile.forms import EditAccountForm
 
@@ -34,3 +35,19 @@ def edit() -> str|Response:
         return redirect(url_for('profile.profile'))
     return render_template('profile/edit.html', form=form)
 
+
+@bp.route('/profile/delete', methods=['GET', 'POST'])
+@login_required
+def delete() -> str|Response:
+    """
+    Delete the user's account.
+
+    Returns:
+        str|Response: The rendered delete page or a redirect to the index page.
+    """
+    form = EmptyForm()
+    if form.validate_on_submit():
+        account_repository.delete(current_user)
+        flash('Your account has been deleted.')
+        return redirect(url_for('index.index'))
+    return render_template('profile/delete.html', form=form)

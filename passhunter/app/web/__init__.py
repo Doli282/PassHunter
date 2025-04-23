@@ -5,9 +5,9 @@ from wtforms import SubmitField
 
 class EmptyForm(FlaskForm):
     """
-    Empty form with a universal submit button.
+    Empty form with a delete submit button.
 
     Attributes:
-        submit (SubmitField): The submit button.
+        submit (SubmitField): The submit button (value='delete').
     """
-    submit = SubmitField('Submit')
+    submit = SubmitField('Delete')
