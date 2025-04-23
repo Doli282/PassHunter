@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
 {% block title %}{{ watchlist.name }} - PassHunter{% endblock %}
 
@@ -7,7 +8,7 @@
 
 {% block content %}
     <h1>Watchlist - {{ watchlist.name }}</h1>
-
+    {# Watchlist details #}
     <dl>
         <dt>Description</dt>
         <dd>{{ watchlist.description }}</dd>
@@ -18,8 +19,50 @@
         <dt>Email Alerts</dt>
         <dd>{{ watchlist.print_send_alerts() }}</dd>
     </dl>
-
+    {# Links for modifying the watchlist #}
     <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}">Edit</a>
     <a href="{{ url_for('watchlist.delete_watchlist', watchlist_id=watchlist.id) }}">Delete</a>
+
+    {# Monitored domains #}
+    <h2>Monitored domains</h2>
+    {# Form for adding new domains #}
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}
+            {{ form.name }}
+            {% for error in form.name.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+            {{ form.submit }}
+    </form>
+    {# Table of monitored domains #}
+    {% if pagination.items %}
+        <table>
+        <thead>
+            <tr>
+                <th>Domain</th>
+                <th>#Alerts</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for domain in pagination.items %}
+                <tr>
+                    <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
+                    <td>##</td>
+                    <td>##</td>
+                    <td><a href="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"></a>Remove</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        {# Pagination #}
+        {{ macros.render_pagination(pagination, 'watchlist.list_watchlists') }}
+    {% else %}
+        <p><i>There are no monitored domains in the watchlist yet.</i></p>
+    {% endif %}
 
 {% endblock %}

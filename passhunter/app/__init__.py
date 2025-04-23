@@ -41,6 +41,9 @@ def create_app():
     from app.web.profile import bp as profile_bp
     app.register_blueprint(profile_bp)
 
+    from app.web.domain import bp as domain_bp
+    app.register_blueprint(domain_bp)
+
     # Set logging handlers
     if not app.debug:
         set_mail_error_reporting(app)

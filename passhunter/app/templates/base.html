@@ -25,6 +25,7 @@
                     <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
                 {% else %}
                     <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
+                    <li><a href="{{ url_for('domain.list_domains') }}" class="nav-item">Domains</a></li>
                     <li><a href="{{ url_for('profile.profile') }}"
                            class="nav-item">Profile</a></li>
                     <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
