@@ -1,6 +1,6 @@
 """Views for the profile page of the PassHunter web application."""
-from flask import render_template, flash, redirect, url_for, Response, request
-from flask_login import login_required, current_user, logout_user
+from flask import render_template, flash, redirect, url_for, Response
+from flask_login import login_required, current_user
 
 from app.repository import account as account_repository
 from app.web import EmptyForm
