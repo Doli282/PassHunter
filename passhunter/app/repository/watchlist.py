@@ -1,8 +1,8 @@
 """Repository for Watchlist"""
-from typing import List
-
 from flask import current_app
+from flask_login import current_user
 from flask_sqlalchemy.pagination import Pagination
+from sqlalchemy import and_
 
 from app import db
 from app.models import Account
@@ -10,40 +10,33 @@ from app.models.watchlist import Watchlist
 from app.web.watchlist.forms import WatchlistForm
 
 
-def get_all() -> List[Watchlist]:
-    """
-    Retrieve all Watchlists.
-
-    Returns:
-        List[Watchlist]: List of all Watchlists.
-    """
-    query = db.select(Watchlist)
-    return db.session.scalars(query).all()
-
-
 def get_page(page: int = 1) -> Pagination:
     """
-    Retrieve paginated Watchlists.
+    Retrieve paginated Watchlists of the current user.
 
     Args:
         page (int): Page number.
     Returns:
         Pagination: Paginated Watchlists.
     """
-    query = db.select(Watchlist)
+    query = db.select(Watchlist).filter(Watchlist.account_id == current_user.id)
     return db.paginate(select=query, page=page, max_per_page=current_app.config['WATCHLISTS_PER_PAGE'])
 
 
 def get_by_id(watchlist_id: int) -> Watchlist:
     """
     Retrieve Watchlist by ID.
+    Rejects requests for Watchlists that do not belong to the current user.
 
     Args:
         watchlist_id (int): Watchlist ID.
     Returns:
         Watchlist: Watchlist by ID.
+    Raises:
+        404 Not Found: If no Watchlist is found for the given ID.
     """
-    return db.get_or_404(Watchlist, ident=watchlist_id)
+    query = db.select(Watchlist).filter(and_(Watchlist.id == watchlist_id, Watchlist.account_id == current_user.id))
+    return db.one_or_404(query)
 
 
 def create(form: WatchlistForm, user: Account) -> Watchlist:
@@ -87,6 +80,8 @@ def delete_by_id(watchlist_id: int) -> Watchlist:
         watchlist_id (int): Watchlist ID.
     Returns:
         Watchlist: Deleted Watchlist.
+    Raises:
+        404 Not Found: If no Watchlist is found for the given ID.
     """
     watchlist = get_by_id(watchlist_id)
     db.session.delete(watchlist)
