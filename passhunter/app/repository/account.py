@@ -79,7 +79,20 @@ def update(account: Account, form: EditAccountForm) -> Account:
     db.session.commit()
     return account
 
-# TODO delete
+
+def delete(account: Account) -> None:
+    """
+    Delete an account.
+    Hard delete is performed.
+
+    Args:
+        account (Account): Account to be deleted
+    Returns:
+        None
+    """
+    db.session.delete(account)
+    db.session.commit()
+
 
 def set_password(account: Account, password: str) -> Account:
     """
