@@ -16,6 +16,7 @@ pip install python-dotenv
 
 ```shell
 pip freeze > requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Database operations
