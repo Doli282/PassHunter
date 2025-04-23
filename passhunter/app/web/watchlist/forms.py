@@ -1,8 +1,8 @@
 """Forms for the watchlist page of the PassHunter web application."""
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField
-from wtforms.fields.simple import EmailField, URLField
-from wtforms.validators import DataRequired, Email, Optional, URL, Length
+from wtforms.fields.simple import EmailField
+from wtforms.validators import DataRequired, Email, Optional, Length
 
 
 class WatchlistForm(FlaskForm):
@@ -21,22 +21,3 @@ class WatchlistForm(FlaskForm):
     send_alerts = BooleanField('Mail Alerts', default=True,
                                description='Whether to send email alerts for this watchlist.')
     submit = SubmitField('Save')
-
-
-class DeleteWatchlistForm(FlaskForm):
-    """Form for deleting a watchlist."""
-    submit = SubmitField('Delete')
-
-
-class AddDomainForm(FlaskForm):
-    """Form for adding a domain to a watchlist."""
-    domain = URLField('Domain', validators=[DataRequired(message='This field must not be empty.'), Length(max=255,
-                                                                                                          message='The maximal length of accepted input is 255 characters.'),
-                                            URL(require_tld=False, message='Monitored domain must be a URL address.')],
-                      description='Domain to add to the watchlist.')
-    submit = SubmitField('Add Domain')
-
-
-class RemoveDomainForm(FlaskForm):
-    """Form for removing a domain from a watchlist."""
-    submit = SubmitField('Remove Domain')

@@ -9,7 +9,7 @@
 {% block content %}
     <h1>Watchlists</h1>
     <p>Here you can manage your watchlists.</p>
-    <a href="{{ url_for('watchlist.create') }}">Create New Watchlist</a>
+    <a href="{{ url_for('watchlist.create_watchlist') }}">Create New Watchlist</a>
     {% if pagination.items %}
         {# Table with individual watchlists #}
         <table>
@@ -17,19 +17,17 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Alerts</th>
                     <th>Status</th>
+                    <th>Alerts</th>
                 </tr>
             </thead>
             <tbody>
                 {% for watchlist in pagination.items %}
                     <tr>
-                        <td>{{ watchlist.name }}</td>
-                        <td>
-                            {{ watchlist.description }}
-                        </td>
+                        <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">{{ watchlist.name }}</a></td>
+                        <td>{{ watchlist.description }}</td>
+                        <td>{{ watchlist.print_active() }}</td>
                         <td>##</td>
-                        <td>XX</td>
                     </tr>
                 {% endfor %}
             </tbody>
