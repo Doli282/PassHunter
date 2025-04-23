@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+
+{% block title %}Domains - PassHunter{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+    <h1>Domains</h1>
+    <p>List of all domains in your watchlists.</p>
+    {% if pagination.items %}
+        {# Table with individual domains #}
+        <table>
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>#Watchlists</th>
+                    <th>#Alerts</th>
+            </thead>
+            <tbody>
+                {% for domain in pagination.items %}
+                    <tr>
+                        <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
+                        <td>{{ domain.watchlists | length }}</td>
+                        <td>{{ domain.alerts | length }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {# Pagination #}
+        {{ macros.render_pagination(pagination, 'domain.list_domains') }}
+    {% else %}
+        <p><i>You do not have any domains in the watchlists yet.</i></p>
+    {% endif %}
+{% endblock %}

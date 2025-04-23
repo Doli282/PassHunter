@@ -2,12 +2,24 @@
 from flask import current_app
 from flask_login import current_user
 from flask_sqlalchemy.pagination import Pagination
-from sqlalchemy import and_
+from sqlalchemy import and_, Select
 
 from app import db
-from app.models import Account
+from app.models import Account, Domain
 from app.models.watchlist import Watchlist
 from app.web.watchlist.forms import WatchlistForm
+
+
+def _select_watchlists_for_user(user: Account) -> Select:
+    """
+    Select Watchlists for a user.
+
+    Args:
+        user (Account): Owner of the Watchlists.
+    Returns:
+        Select: SQLAlchemy select statement.
+    """
+    return db.select(Watchlist).filter(Watchlist.account_id == user.id)
 
 
 def get_page(page: int = 1) -> Pagination:
@@ -19,8 +31,8 @@ def get_page(page: int = 1) -> Pagination:
     Returns:
         Pagination: Paginated Watchlists.
     """
-    query = db.select(Watchlist).filter(Watchlist.account_id == current_user.id)
-    return db.paginate(select=query, page=page, max_per_page=current_app.config['WATCHLISTS_PER_PAGE'])
+    query = _select_watchlists_for_user(current_user)
+    return db.paginate(select=query, page=page, max_per_page=current_app.config['PER_PAGE'])
 
 
 def get_by_id(watchlist_id: int) -> Watchlist:

@@ -3,8 +3,10 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from werkzeug import Response
 
+import app.repository.domain as domain_repository
 import app.repository.watchlist as watchlist_repository
 from app.web import EmptyForm
+from app.web.domain.forms import DomainForm
 from app.web.watchlist import bp
 from app.web.watchlist.forms import WatchlistForm
 
@@ -26,19 +28,26 @@ def list_watchlists() -> str:
     )
 
 
-@bp.route('/watchlists/<int:watchlist_id>')
+@bp.route('/watchlists/<int:watchlist_id>', methods=['GET', 'POST'])
 @login_required
-def view_watchlist(watchlist_id: int) -> str:
+def view_watchlist(watchlist_id: int) -> str | Response:
     """
     View a specific watchlist belonging to the current user.
 
     Args:
         watchlist_id (int): The ID of the watchlist to view.
     Returns:
-        str: The watchlist view template.
+        str|Response: The 'watchlist view' template or redirection to the watchlist view.
     """
     watchlist = watchlist_repository.get_by_id(watchlist_id)
-    return render_template('watchlist/view.html', watchlist=watchlist)
+    page = request.args.get('page', 1, type=int)
+    pagination = domain_repository.get_page_for_watchlist(watchlist_id, page)
+    form = DomainForm()
+    if form.validate_on_submit():
+        domain_repository.upsert(form, watchlist)
+        flash(f'Domain "{form.name.data}" added to watchlist "{watchlist.name}" successfully.', 'success')
+        return redirect(url_for('watchlist.view_watchlist', watchlist_id=watchlist_id))
+    return render_template('watchlist/view.html', watchlist=watchlist, form=form, pagination=pagination)
 
 
 @bp.route('/watchlists/create', methods=['GET', 'POST'])
@@ -97,3 +106,23 @@ def delete_watchlist(watchlist_id: int) -> str|Response:
         return redirect(url_for('watchlist.list_watchlists'))
     return render_template('watchlist/delete.html', watchlist=watchlist, form=form)
 
+@bp.route('/watchlists/<int:watchlist_id>/remove_domain/<int:domain_id>', methods=['GET', 'POST'])
+@login_required
+def remove_domain(watchlist_id: int, domain_id: int) -> str|Response:
+    """
+    Remove a domain from a watchlist for the current user.
+
+    Args:
+        watchlist_id (int): The ID of the watchlist to remove the domain from.
+        domain_id (int): The ID of the domain to remove from the watchlist.
+    Returns:
+        str|Response: The 'watchlist remove domain' template or redirection to the watchlist view.
+    """
+    form = EmptyForm()
+    watchlist = watchlist_repository.get_by_id(watchlist_id)
+    domain = domain_repository.get_by_id(domain_id)
+    if form.validate_on_submit():
+        domain_repository.remove_domain_from_watchlist(domain, watchlist)
+        flash(f'Domain "{domain.name}" removed from watchlist "{watchlist.name}" successfully.', 'success')
+        return redirect(url_for('watchlist.view_watchlist', watchlist_id=watchlist_id))
+    return render_template('watchlist/remove_domain.html', watchlist=watchlist, domain=domain, form=form)
