@@ -39,6 +39,16 @@ async def handler(message: Message) -> None:
 
 
 async def worker(name: str) -> None:
+    """
+    Worker function.
+    Perform the actual download of a file.
+    Take a message from the queue and perform the task.
+
+    Args:
+        name (str): Name of the worker.
+    Returns:
+        None
+    """
     while True:
         filename = 'Unknown_File'
         try:
@@ -85,7 +95,7 @@ async def start() -> None:
         logging.debug("Workers stopped.")
         # Stop the client.
         client.disconnect()
-        logging.info("Telegram client stopped!")
+        logging.warning("Telegram client stopped!")
 
 
 if __name__ == "__main__":
