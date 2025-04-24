@@ -24,6 +24,9 @@ Register the Telegram application and obtain API ID on https://docs.telethon.dev
 1. Login on https://my.telegram.org/.
 2. Click API Development Tools.
 3. Create a new application. Fill in the details.
+4. Get API TOKEN and API HASH
+
+Register a new bot by Telegram BotFather (@BotFather) and get the BOT TOKEN.
 
 ## Bot vs. Phone vs. Admin rights? 
 
