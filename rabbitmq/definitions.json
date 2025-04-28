@@ -1,0 +1,94 @@
+{
+  "vhosts": [
+    {
+      "name": "downloads_vhost"
+    },
+    {
+      "name": "uploads_vhost"
+    }
+  ],
+  "users": [
+    {
+      "name": "download_user",
+      "password_hash": "Hfj5DZyiAosxnqDFl9JSd6hOfH+rPpJUP4mgkl9Nler7rGmW",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    },
+    {
+      "name": "upload_user",
+      "password_hash": "igQLiSOUM8qrXq5JYjfSJJaXsB88FoBi5LamnsXgZPSt7w0p",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "download_user",
+      "vhost": "downloads_vhost",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "upload_user",
+      "vhost": "uploads_vhost",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "downloads",
+      "vhost": "downloads_vhost",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "uploads",
+      "vhost": "uploads_vhost",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "downloads",
+      "vhost": "downloads_vhost",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "uploads",
+      "vhost": "uploads_vhost",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "downloads",
+      "vhost": "downloads_vhost",
+      "destination_type": "queue",
+      "destination": "downloads",
+      "routing_key": "downloads",
+      "arguments": {}
+    },
+    {
+      "source": "uploads",
+      "vhost": "uploads_vhost",
+      "destination_type": "queue",
+      "destination": "uploads",
+      "routing_key": "uploads",
+      "arguments": {}
+    }
+  ]
+}

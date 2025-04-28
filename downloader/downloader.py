@@ -3,10 +3,11 @@ import asyncio
 import logging
 import os.path
 
+from celery import Celery
 from telethon import TelegramClient, events
 from telethon.tl.custom import Message
 
-from config import Config
+from config import Config, ConfigCelery
 
 # Set up logging.
 logging.basicConfig(format=Config.LOGGING_FORMAT, level=logging.INFO)
@@ -16,6 +17,10 @@ client = TelegramClient(session=Config.SESSION,api_id=int(Config.API_ID), api_ha
 
 # Create queue for storing download requests.
 queue = asyncio.Queue()
+
+# Celery
+celery = Celery('downloader')
+celery.config_from_object(ConfigCelery)
 
 @client.on(events.NewMessage(incoming=True))
 async def handler(message: Message) -> None:
@@ -58,6 +63,9 @@ async def worker(name: str) -> None:
 
             # Perform the actual download.
             await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
+            # Send a task to celery.
+            celery.send_task('extractor.extract_archive', args=[os.path.join(Config.DOWNLOAD_PATH, filename)])
+            logging.debug(f"Worker '{name}' downloaded '{filename}'")
             # Notify the queue, the message has been processed.
             queue.task_done()
         except asyncio.TimeoutError as e:
