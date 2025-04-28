@@ -1,13 +1,14 @@
-"""Configuration file for the Telegram Downloader Daemon"""
+"""Configuration file for the Telegram Downloader Daemon."""
 import os
 from dotenv import load_dotenv
+from kombu import Queue, Exchange
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 load_dotenv(os.path.join(basedir, '.env'))
 
 class Config(object):
-    """Base configuration class"""
+    """Base configuration class."""
     # Telegram
     API_ID = os.getenv('TELEGRAM_API_ID')
     API_HASH = os.getenv('TELEGRAM_API_HASH')
@@ -18,3 +19,20 @@ class Config(object):
     # Application
     WORKER_COUNT = 4
     DOWNLOAD_PATH = '/tmp'
+
+class ConfigCelery(object):
+    """Celery configuration class."""
+    broker_url = os.getenv('CELERY_BROKER_URL')
+
+    # Declare named queues bound to direct exchanges
+    task_queues = (
+        Queue('downloads', Exchange('downloads', type='direct'), routing_key='downloads'),
+    )
+
+    # Route specific tasks to the appropriate queue
+    task_routes = {
+        'extractor.extract_archive': {'queue': 'downloads', 'routing_key': 'downloads'},
+    }
+
+    # auto-create any queue routed-to
+    task_create_missing_queues = True
