@@ -2,6 +2,78 @@
 #name: 'passhunter'
 
 services:
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: docker.io/library/rabbitmq:4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: app_password_main
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    networks:
+      - hunter-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+#  forwarder:
+#    container_name: forwarder
+#    hostname: forwarder
+#    build:
+#      context: ./forwarder
+#      dockerfile: Dockerfile
+#    networks:
+#      - hunter-network
+#    env_file:
+#      - ./forwarder/.env
+
+
+  downloader:
+    container_name: downloader
+    hostname: downloader
+    build:
+      context: ./downloader
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    networks:
+      - hunter-network
+    volumes:
+      - download_volume:/data
+    env_file:
+      - ./downloader/.env
+
+  extractor:
+    container_name: extractor
+    hostname: extractor
+    build:
+      context: ./extractor
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    networks:
+      - hunter-network
+    volumes:
+      - download_volume:/data/downloads
+      - upload_volume:/data/uploads
+
+  #  uploader:
+  #    container_name: uploader
+  #    hostname: uploader
+  #    build: ./uploader
+  #    depends_on:
+  #      - rabbitmq
+  #    networks:
+  #      - hunter-network
+  #    volumes:
+  #      - upload_volume:/data
+  #    env_file:
+  #      - ./uploader/.env
+  #    environment:
+  #      CELERY_BROKER_URL: amqp://app_user:app_pass@rabbitmq:5672/uploads_vhost
+
 #  web:
 #    container_name: web
 #    hostname: web
@@ -18,26 +90,28 @@ services:
 #      db:
 #        condition: service_healthy
 
-  db:
-    container_name: db
-    hostname: db
-    image: docker.io/library/postgres:17
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-      #- ./postgres/data:/var/lib/postgresql/data/
-    networks:
-      - hunter-network
-    env_file:
-      - ./postgres/.env
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 5s
+#  db:
+#    container_name: db
+#    hostname: db
+#    image: docker.io/library/postgres:17
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data/
+#      #- ./postgres/data:/var/lib/postgresql/data/
+#    networks:
+#      - hunter-network
+#    env_file:
+#      - ./postgres/.env
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 20
+#      start_period: 5s
 
 volumes:
   postgres_data:
+  download_volume:
+  upload_volume:
 
 networks:
   hunter-network:
