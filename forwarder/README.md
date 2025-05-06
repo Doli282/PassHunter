@@ -1,6 +1,6 @@
 # Forwarder - Telegram Daemon
 
-This daemon forwards messages that contain documents to specified channels.
+This daemon forwards messages that contain documents to the specified channel.
 
 
 ## Installation

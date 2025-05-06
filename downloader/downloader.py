@@ -63,7 +63,7 @@ async def worker(name: str) -> None:
             filename = message.file.name
 
             # Perform the actual download.
-            #await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
+            await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
 
             # Extract a password from the message
             match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', message.raw_text, re.IGNORECASE)
