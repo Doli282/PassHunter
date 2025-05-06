@@ -9,6 +9,8 @@ pip install python-dotenv
 
 # For better performance during file download as mentioned in https://docs.telethon.dev/en/stable/basic/installation.html
 pip install cryptg
+
+pip install celery
 ```
 
 ```shell
