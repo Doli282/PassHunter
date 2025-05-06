@@ -6,6 +6,7 @@ sudo apt install unrar
 
 ```shell
 pip install rarfile
+pip install celery
 ```
 
 ## Extraction
