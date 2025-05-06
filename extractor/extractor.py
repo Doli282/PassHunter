@@ -1,4 +1,4 @@
-"""Run the main application."""
+"""Extractor - extracts files from archives"""
 import logging
 import os
 from tempfile import mkdtemp
@@ -31,7 +31,7 @@ def extract_archive(archive_path: str, archive_password: str) -> None:
     # Extract the archive into a new directory
     destination = mkdtemp()
 
-    # Choose the extrator function based on the archive extension
+    # Choose the extractor function based on the archive extension
     match os.path.splitext(archive_path)[-1]:
         case '.zip':
             extract_zip(archive_path, archive_password, destination)
@@ -41,12 +41,14 @@ def extract_archive(archive_path: str, archive_password: str) -> None:
             logging.error(f"Unsupported archive type '{os.path.splitext(archive_path)[-1]}'")
             _clean(archive_path)
             return
-
-    # TODO send message to the queue
-
     logging.info(f"Archive extracted")
+
+    # Send message to the uploading queue
+    uploader.send_task('uploader.process_batch', args=[destination])
+
     # Remove the processed archive
     _clean(archive_path)
+    logging.info(f"Extractor has finished.")
     return
 
 def extract_zip(archive_path: str, archive_password:str, extract_to: str) -> None:
@@ -136,7 +138,7 @@ def extract_rar(archive_path: str, archive_password:str, extract_to: str) -> boo
 
 def _filename_filter(filename: str) -> bool:
     """
-    Filter names of files to extract according a list of keywards.
+    Filter names of files to extract, according to a list of keywords.
 
     Args:
         filename (str): Name of the file to filter.
