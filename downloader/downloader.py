@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os.path
+import re
 
 from celery import Celery
 from telethon import TelegramClient, events
@@ -62,9 +63,20 @@ async def worker(name: str) -> None:
             filename = message.file.name
 
             # Perform the actual download.
-            await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
+            #await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
+
+            # Extract a password from the message
+            match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', message.raw_text, re.IGNORECASE)
+            password = ""
+            if match:
+                password = match.group(2)
+                logging.debug(f"Password found in message")
+            else:
+                logging.warning(f"No password found in message '{message.raw_text}'")
+
+
             # Send a task to celery.
-            celery.send_task('extractor.extract_archive', args=[os.path.join(Config.DOWNLOAD_PATH, filename)])
+            celery.send_task('extractor.extract_archive', args=[os.path.join(Config.DOWNLOAD_PATH, filename), password])
             logging.debug(f"Worker '{name}' downloaded '{filename}'")
             # Notify the queue, the message has been processed.
             queue.task_done()
