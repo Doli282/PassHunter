@@ -9,6 +9,9 @@ Make a virtual environment and install requirements from `requirements.txt`.
 pip install -r requirements.txt
 ```
 
+`If libssl is available on your system, the library will make use of it to speed up some critical parts such as encrypting and decrypting the messages. Files will notably be sent and downloaded faster.'
+source: https://docs.telethon.dev/en/stable/developing/philosophy.html
+
 ### Telegram Account
 Register the Telegram application and obtain API ID on https://docs.telethon.dev/en/stable/basic/signing-in.html.
 1. Login on https://my.telegram.org/.
