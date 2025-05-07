@@ -10,11 +10,15 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY passhunter/requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
+COPY models /usr/src/app/app/models
+RUN pip install /usr/src/app/app/models
+
+
 # copy project
-COPY . /usr/src/app/
+COPY passhunter /usr/src/app/
 
 # Make entrypoint script executable
 RUN chmod +x /usr/src/app/entrypoint.sh

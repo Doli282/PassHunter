@@ -1,9 +1,10 @@
 """Initialize the PassHunter web application."""
 from flask import Flask
 
-from app.extensions import db, migrate, login
+from app.extensions import migrate, login
 from app.tools.logs import set_mail_error_reporting, set_rotating_log_file
 from config import Config
+from models import db
 
 
 def create_app():

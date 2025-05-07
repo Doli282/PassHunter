@@ -1,12 +1,12 @@
 """Domain Model"""
 from typing import Set, List, TYPE_CHECKING
 
-from app.extensions import db
-from app.models.watchlists_domains_association import watchlist_domain_association
+from . import db
+from .watchlists_domains_association import watchlist_domain_association
 
 if TYPE_CHECKING:
-    from app.models import Watchlist
-    from app.models.alert import Alert
+    from .watchlist import Watchlist
+    from .alert import Alert
 
 
 class Domain(db.Model):

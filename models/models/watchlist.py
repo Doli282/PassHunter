@@ -1,13 +1,13 @@
 """Watchlist model"""
 from typing import Optional, Set, List, TYPE_CHECKING
 
-from app.extensions import db
-from app.models.watchlists_domains_association import watchlist_domain_association
+from . import db
+from .watchlists_domains_association import watchlist_domain_association
 
 if TYPE_CHECKING:
-    from app.models.alert import Alert
-    from app.models.domain import Domain
-    from app.models.account import Account
+    from .alert import Alert
+    from .domain import Domain
+    from .account import Account
 
 
 class Watchlist(db.Model):

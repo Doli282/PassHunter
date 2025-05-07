@@ -4,7 +4,8 @@ from sqlalchemy import select
 from wtforms.validators import ValidationError
 
 from app import db
-from app.models.account import Account
+
+from models import Account
 
 
 def validate_email(form: FlaskForm, email: str) -> None:

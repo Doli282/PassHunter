@@ -18,16 +18,16 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-#  forwarder:
-#    container_name: forwarder
-#    hostname: forwarder
-#    build:
-#      context: ./forwarder
-#      dockerfile: Dockerfile
-#    networks:
-#      - hunter-network
-#    env_file:
-#      - ./forwarder/.env
+  forwarder:
+    container_name: forwarder
+    hostname: forwarder
+    build:
+      context: ./forwarder
+      dockerfile: Dockerfile
+    networks:
+      - hunter-network
+    env_file:
+      - ./forwarder/.env
 
 
   downloader:
@@ -74,39 +74,39 @@ services:
   #    environment:
   #      CELERY_BROKER_URL: amqp://app_user:app_pass@rabbitmq:5672/uploads_vhost
 
-#  web:
-#    container_name: web
-#    hostname: web
-#    build:
-#      context: ./passhunter
-#      dockerfile: Dockerfile
-#    networks:
-#      - hunter-network
-#    ports:
-#      - "5000:5000"
-#    env_file:
-#      - ./passhunter/.env
-#    depends_on:
-#      db:
-#        condition: service_healthy
+  web:
+    container_name: web
+    hostname: web
+    build:
+      context: .
+      dockerfile: passhunter/Dockerfile
+    networks:
+      - hunter-network
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./passhunter/.env
+    depends_on:
+      db:
+        condition: service_healthy
 
-#  db:
-#    container_name: db
-#    hostname: db
-#    image: docker.io/library/postgres:17
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#      #- ./postgres/data:/var/lib/postgresql/data/
-#    networks:
-#      - hunter-network
-#    env_file:
-#      - ./postgres/.env
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 20
-#      start_period: 5s
+  db:
+    container_name: db
+    hostname: db
+    image: docker.io/library/postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      #- ./postgres/data:/var/lib/postgresql/data/
+    networks:
+      - hunter-network
+    env_file:
+      - ./postgres/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
 
   opensearch:
     container_name: opensearch
@@ -130,9 +130,9 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - opensearch-data:/usr/share/opensearch/data
+      - opensearch_data:/usr/share/opensearch/data
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -k https://localhost:9200 -u admin:admin || exit 1" ]
+      test: [ "CMD-SHELL", "curl -s -k https://localhost:9200/_cluster/health -u admin:${OPENSEARCH_ADMIN_PASSWORD} || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -141,7 +141,7 @@ volumes:
   postgres_data:
   download_volume:
   upload_volume:
-  opensearch-data:
+  opensearch_data:
 
 networks:
   hunter-network:
