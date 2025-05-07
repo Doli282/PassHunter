@@ -12,7 +12,7 @@ class Config(object):
     # Telegram
     API_ID = os.getenv('TELEGRAM_API_ID')
     API_HASH = os.getenv('TELEGRAM_API_HASH')
-    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
     SESSION = 'downloader'
     # Logging
     LOGGING_FORMAT = '%(asctime)s Downloader: %(levelname)s: %(message)s'

@@ -3,13 +3,13 @@ import base64
 import datetime
 import logging
 import os
+from typing import Any
 
 from celery import Celery
 from opensearchpy import helpers
 
 from celeryconfig import ConfigUploader
-
-# Import OpenSearch
+from models import db
 from opensearch.opensearch import Client
 
 # Set up logging
@@ -104,7 +104,6 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
         logging.error(f"Error during bulk indexing")
     if success != len(actions):
         logging.error(f"Not all documents were indexed. Success rate: ({success}/{len(actions)})")
-
 
 def search_batch(uploaded_at: str = None) -> Any:
 
