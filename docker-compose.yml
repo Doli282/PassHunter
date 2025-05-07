@@ -4,7 +4,7 @@
 services:
   rabbitmq:
     container_name: rabbitmq
-    hostname: rabbitmq
+    hostname: "${RABBIT_HOST}"
     image: docker.io/library/rabbitmq:4-management
     environment:
       RABBITMQ_DEFAULT_USER: user
@@ -15,7 +15,7 @@ services:
     networks:
       - hunter-network
     ports:
-      - "5672:5672"
+      - "5672:${RABBIT_PORT}"
       - "15672:15672"
 
   forwarder:
@@ -26,8 +26,9 @@ services:
       dockerfile: Dockerfile
     networks:
       - hunter-network
-    env_file:
-      - ./forwarder/.env
+    environment:
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
 
 
   downloader:
@@ -42,8 +43,11 @@ services:
       - hunter-network
     volumes:
       - download_volume:/data
-    env_file:
-      - ./downloader/.env
+    environment:
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
+      CELERY_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
 
   extractor:
     container_name: extractor
@@ -58,21 +62,31 @@ services:
     volumes:
       - download_volume:/data/downloads
       - upload_volume:/data/uploads
+    environment:
+      DOWNLOADER_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
 
-  #  uploader:
-  #    container_name: uploader
-  #    hostname: uploader
-  #    build: ./uploader
-  #    depends_on:
-  #      - rabbitmq
-  #    networks:
-  #      - hunter-network
-  #    volumes:
-  #      - upload_volume:/data
-  #    env_file:
-  #      - ./uploader/.env
-  #    environment:
-  #      CELERY_BROKER_URL: amqp://app_user:app_pass@rabbitmq:5672/uploads_vhost
+  monitor:
+    container_name: monitor
+    hostname: monitor
+    build:
+      context: .
+      dockerfile: monitor/Dockerfile
+    depends_on:
+      - rabbitmq
+      - db
+      - opensearch
+    networks:
+      - hunter-network
+    volumes:
+      - upload_volume:/data
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+      OPENSEARCH_HOST: "${OPENSEARCH_HOST}"
+      OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
+      OPENSEARCH_USER: "${OPENSEARCH_USER}"
+      OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
 
   web:
     container_name: web
@@ -86,23 +100,29 @@ services:
       - "5000:5000"
     env_file:
       - ./passhunter/.env
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
     depends_on:
       db:
         condition: service_healthy
 
   db:
     container_name: db
-    hostname: db
+    hostname: "${POSTGRES_HOST}"
     image: docker.io/library/postgres:17
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       #- ./postgres/data:/var/lib/postgresql/data/
     networks:
       - hunter-network
-    env_file:
-      - ./postgres/.env
+    ports:
+      - "5432:${POSTGRES_PORT}"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -t 1" ]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -110,7 +130,7 @@ services:
 
   opensearch:
     container_name: opensearch
-    hostname: opensearch
+    hostname: "${OPENSEARCH_HOST}"
     build:
       context: opensearch
       dockerfile: Dockerfile
@@ -127,15 +147,18 @@ services:
       nofile:
         soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
         hard: 65536
+    networks:
+      - hunter-network
     ports:
-      - "9200:9200"
+      - "9200:${OPENSEARCH_PORT}"
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s -k https://localhost:9200/_cluster/health -u admin:${OPENSEARCH_ADMIN_PASSWORD} || exit 1" ]
+      test: [ "CMD-SHELL", "curl -s -k https://localhost:${OPENSEARCH_HOST}/_cluster/health -u ${OPENSEARCH_USER}:${OPENSEARCH_ADMIN_PASSWORD} || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 10
+      start_period: 20s
 
 volumes:
   postgres_data:
