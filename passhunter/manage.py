@@ -2,7 +2,7 @@
 from flask.cli import FlaskGroup
 
 from app import create_app
-from app.extensions import db
+from models import db
 
 cli = FlaskGroup(create_app())
 

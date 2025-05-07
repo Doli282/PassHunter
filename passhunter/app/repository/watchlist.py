@@ -5,8 +5,8 @@ from flask_sqlalchemy.pagination import Pagination
 from sqlalchemy import and_, Select
 
 from app import db
-from app.models import Account, Domain
-from app.models.watchlist import Watchlist
+from models import Account, Domain
+from models.watchlist import Watchlist
 from app.web.watchlist.forms import WatchlistForm
 
 

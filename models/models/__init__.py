@@ -1,10 +1,14 @@
 """Models for the PassHunter web application."""
+from flask_sqlalchemy import SQLAlchemy
+
 # from sqlalchemy_utils import auto_delete_orphans
 
-from app.models.account import Account
-from app.models.alert import Alert
-from app.models.domain import Domain
-from app.models.watchlist import Watchlist
+db = SQLAlchemy()
+
+from .account import Account
+from .alert import Alert
+from .domain import Domain
+from .watchlist import Watchlist
 
 # Auto delete orphaned domains
 # auto_delete_orphans(Watchlist.domains)

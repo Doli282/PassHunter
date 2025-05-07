@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 from flask_login import UserMixin
 
-from app.extensions import db
+from . import db
 
 if TYPE_CHECKING:
-    from app.models import Watchlist
+    from .watchlist import Watchlist
 
 
 class Account(db.Model, UserMixin):

@@ -5,8 +5,8 @@ from flask_sqlalchemy.pagination import Pagination
 
 
 from app import db
-from app.models import Domain, Watchlist
-from app.models.watchlists_domains_association import watchlist_domain_association
+from models import Domain, Watchlist
+from models.watchlists_domains_association import watchlist_domain_association
 from app.repository.watchlist import _select_watchlists_for_user
 from app.web.domain.forms import DomainForm
 
