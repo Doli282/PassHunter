@@ -2,11 +2,11 @@
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from app.extensions import db
+from . import db
 
 if TYPE_CHECKING:
-    from app.models.domain import Domain
-    from app.models.watchlist import Watchlist
+    from .domain import Domain
+    from .watchlist import Watchlist
 
 
 class Alert(db.Model):
