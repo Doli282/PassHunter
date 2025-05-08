@@ -40,6 +40,9 @@ def create_app():
     from app.web.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
+    from app.web.alert import bp as alert_bp
+    app.register_blueprint(alert_bp)
+
     from app.web.watchlist import bp as watchlist_bp
     app.register_blueprint(watchlist_bp)
 
