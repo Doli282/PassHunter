@@ -136,3 +136,9 @@ https://docs.opensearch.org/docs/latest/search-plugins/searching-data/highlight/
 Parsing files is possible only when the files follow a predefined static structure.
 Files processed by the application may follow some kind of structure, but it is not certain.
 Some files have different structures from other files.
+
+
+# Files
+
+hashing: https://docs.python.org/3/library/hashlib.html#hashlib.file_digest
+hash stored as LargeBinary -> transforms into bytea in PG https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.LargeBinary
