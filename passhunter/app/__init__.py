@@ -1,7 +1,7 @@
 """Initialize the PassHunter web application."""
 from flask import Flask
 
-from app.extensions import migrate, login
+from app.extensions import migrate, moment, login
 from app.tools.logs import set_mail_error_reporting, set_rotating_log_file
 from config import Config
 from models import db
@@ -18,6 +18,9 @@ def create_app():
     migrate.init_app(app, db)
     with app.app_context():
         db.create_all()
+
+    # Initialize Flask-Moment
+    moment.init_app(app)
 
     # Initialize Flask-Login
     login.init_app(app)

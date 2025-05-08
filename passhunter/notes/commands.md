@@ -7,6 +7,7 @@ pip install email-validator
 pip install flask
 pip install flask-login
 pip install flask-migrate
+pip install flask-moment
 pip install flask-sqlalchemy
 pip install flask-wtf
 pip install psycopg2-binary
