@@ -64,7 +64,7 @@ services:
       - upload_volume:/data/uploads
     environment:
       DOWNLOADER_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
-      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
 
   monitor:
     container_name: monitor
@@ -86,7 +86,7 @@ services:
       OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
       OPENSEARCH_USER: "${OPENSEARCH_USER}"
       OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
-      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
 
   web:
     container_name: web
