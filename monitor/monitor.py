@@ -8,8 +8,8 @@ from typing import Any
 from celery import Celery
 from opensearchpy import helpers
 
-from celeryconfig import ConfigUploader
-from models import db
+import database
+from config import ConfigUploader
 from opensearch.opensearch import Client
 
 # Set up logging
@@ -23,11 +23,11 @@ uploader.config_from_object(ConfigUploader)
 # OpenSearch client
 opensearch = Client()
 
-@uploader.task(name='uploader.upload_batch')
-def upload_batch(folder_path: str):
+@uploader.task(name='monitor.process_batch')
+def process_batch(folder_path: str):
     # Get the timestamp of the upload.
-    upload_time = datetime.datetime.now().isoformat()
-    upload_bulk(folder_path, upload_time)
+    upload_time = datetime.datetime.now()
+    upload_bulk(folder_path, upload_time.isoformat())
     # Upload the files with individual API calls.
     #for file in os.listdir(folder_path):
     #    upload_file(os.path.join(folder_path, file), upload_time)
@@ -105,17 +105,38 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
     if success != len(actions):
         logging.error(f"Not all documents were indexed. Success rate: ({success}/{len(actions)})")
 
-def search_batch(uploaded_at: str = None) -> Any:
+def search_batch(uploaded_at: str = None):
 
-    logging.debug("searching")
-    # TODO add access to the database
-    TERM = 'bautista4455'
-    response = opensearch.search_term(TERM, uploaded_at)
+    logging.debug("Searching the batch")
+    # Get the list of monitored domains.
+    domains = database.get_monitored_domains()
+    print("Domains from DB:", domains)
+    domains = ["google.com", "pass", "gmail.com"]
+    # Search for each domain in the batch.
+    for domain in domains:
+#        response = search_for_domain(domain.name, uploaded_at)
+        response = search_for_domain(domain, uploaded_at)
+        hit_count = response.get("hits", {}).get("total", {}).get("value", 0)
+        hits = {}
+        for hit in  response.get("hits", {}).get("hits", []):
+            hits[hit.get("_source", {}).get("filename", "unknown_file")] = hit.get("highlight", {}).get("attachment_parts", [])
+#        print("-"*20 + f"SEARCH RESULTS for domain {domain.name}" + "-"*20)
+        print("-"*20 + f"SEARCH RESULTS for domain {domain}" + "-"*20)
+
+        print(f"hit count: {hit_count}")
+        print(f"hits:")
+        for k, v in hits.items():
+            print(f"{k}: {v}")
+        print("-"*20)
+
+def search_for_domain(domain: str, uploaded_at: str = None) -> Any:
+    logging.debug("Searching for domain: " + domain)
+    response = opensearch.search_term(domain, uploaded_at)
     return response
 
 # TODO remove
 print("-"*20 + "UPLOADING" + "-"*20)
-upload_t = upload_batch("/home/doli/bp/BP-application/monitor/test_data")
+upload_t = process_batch("./test_data")
 print("-"*20 + "SEARCHING" + "-"*20)
 print(search_batch(upload_t))
 print("-"*20 + "DELETING" + "-"*20)

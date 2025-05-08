@@ -13,10 +13,6 @@ class ConfigUploader(Object):
     """Configuration class for uploader vhost."""
     broker_url = os.getenv("UPLOADER_BROKER_URL")
 
-    imports = (
-        "batchprocessor.tasks",
-    )
-
     # Declare named queues bound to direct exchanges
     task_queues = (
         Queue("uploads", Exchange("uploads", type="direct"), routing_key="uploads"),
@@ -24,7 +20,7 @@ class ConfigUploader(Object):
 
     # Route specific tasks to the appropriate queue
     task_routes = {
-        "batchprocessor.process_batch": {"queue": "uploads", "routing_key": "uploads"},
+        "monitor.process_batch": {"queue": "uploads", "routing_key": "uploads"},
     }
 
     # auto-create any queue routed-to
