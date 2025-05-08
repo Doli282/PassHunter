@@ -8,6 +8,7 @@ db = SQLAlchemy()
 from .account import Account
 from .alert import Alert
 from .domain import Domain
+from .file import File
 from .watchlist import Watchlist
 
 # Auto delete orphaned domains
