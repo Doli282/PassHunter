@@ -3,14 +3,16 @@ import base64
 import datetime
 import logging
 import os
-from typing import Any
 
 from celery import Celery
 from opensearchpy import helpers
+from sqlalchemy import select, create_engine
+from sqlalchemy.orm import Session
 
-import database
-from config import ConfigUploader
+from config import ConfigUploader, Config
 from opensearch.opensearch import Client
+
+from models import Alert, Domain, Watchlist
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Monitor: %(levelname)s: %(message)s'
@@ -23,17 +25,18 @@ uploader.config_from_object(ConfigUploader)
 # OpenSearch client
 opensearch = Client()
 
+# Engine for connecting to the database.
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+
 @uploader.task(name='monitor.process_batch')
 def process_batch(folder_path: str):
     # Get the timestamp of the upload.
     upload_time = datetime.datetime.now()
+    logging.info(f"Processing a new batch from '{folder_path}' at {upload_time.isoformat()}")
+    # Upload all files in the folder to OpenSearch.
     upload_bulk(folder_path, upload_time.isoformat())
-    # Upload the files with individual API calls.
-    #for file in os.listdir(folder_path):
-    #    upload_file(os.path.join(folder_path, file), upload_time)
-
-    # TODO perform search
-    # TODO alerting
+    # Search for the domains in the uploaded batch.
+    search_batch(upload_time)
     return upload_time
 
 def upload_file(file_path: str, upload_time: str) -> bool:
@@ -104,40 +107,83 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
         logging.error(f"Error during bulk indexing")
     if success != len(actions):
         logging.error(f"Not all documents were indexed. Success rate: ({success}/{len(actions)})")
+    else:
+        logging.info(f"Successfully uploaded {success} documents.")
 
-def search_batch(uploaded_at: str = None):
+def search_batch(uploaded_at: datetime.datetime) -> None:
+    """
+    Search for domains in the uploaded batch.
 
-    logging.debug("Searching the batch")
+    Args:
+        uploaded_at (datetime): The timestamp of the upload.
+
+    Returns:
+        None
+    """
+    logging.debug(f"Searching through the batch uploaded at {uploaded_at.isoformat()}")
     # Get the list of monitored domains.
-    domains = database.get_monitored_domains()
-    print("Domains from DB:", domains)
-    domains = ["google.com", "pass", "gmail.com"]
-    # Search for each domain in the batch.
-    for domain in domains:
-#        response = search_for_domain(domain.name, uploaded_at)
-        response = search_for_domain(domain, uploaded_at)
-        hit_count = response.get("hits", {}).get("total", {}).get("value", 0)
-        hits = {}
-        for hit in  response.get("hits", {}).get("hits", []):
-            hits[hit.get("_source", {}).get("filename", "unknown_file")] = hit.get("highlight", {}).get("attachment_parts", [])
-#        print("-"*20 + f"SEARCH RESULTS for domain {domain.name}" + "-"*20)
-        print("-"*20 + f"SEARCH RESULTS for domain {domain}" + "-"*20)
+    statement = select(Domain).filter(Domain.watchlists.any(Watchlist.is_active==True))
+    with Session(engine) as session:
+        # Search for each domain in the batch.
+        for domain in session.scalars(statement).all():
+            hit_count = search_for_domain(domain, uploaded_at)
+            logging.debug(f"Domain found {hit_count} times.")
+            # When the domain is found, create alerts for each watchlist associated with the domain.
+            if hit_count > 0:
+                make_alerts(domain, uploaded_at, session)
 
-        print(f"hit count: {hit_count}")
-        print(f"hits:")
-        for k, v in hits.items():
-            print(f"{k}: {v}")
-        print("-"*20)
+def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime) -> int:
+    """
+    Search for a domain in OpenSearch.
+    Searches for the domain name only in the uploaded batch.
 
-def search_for_domain(domain: str, uploaded_at: str = None) -> Any:
-    logging.debug("Searching for domain: " + domain)
-    response = opensearch.search_term(domain, uploaded_at)
-    return response
+    Args:
+        domain (Domain): The domain to search for.
+        uploaded_at (datetime): The timestamp of the upload.
+
+    Returns:
+        Hit count.
+    """
+    logging.debug(f"Searching for domain: '{domain.name}'")
+    # Search for the domain with OpenSearch.
+    response = opensearch.search_term(domain.name, uploaded_at.isoformat())
+    # Check if the domain was found.
+    return response.get("hits", {}).get("total", {}).get("value", 0)
+
+def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Session) -> None:
+    """
+    Make alerts for the domain.
+    Iterate over watchlists and raise alerts.
+
+    Args:
+        domain (Domain): The domain for which alerts should be created.
+        created_at (datetime): The creation time of the alert.
+        session (Session): The database session.
+
+    Returns:
+        None
+    """
+    logging.debug(f"Creating alerts for domain: '{domain.name}'")
+    # When the domain is found, create alerts for each watchlist associated with the domain.
+    for watchlist in domain.watchlists:
+        if not watchlist.is_active:
+            # If the watchlist is not active, skip it.
+            logging.debug(f"Watchlist [{watchlist.id}] '{watchlist.name}' is not active. Skipping.")
+            continue
+        # Create an alert for the watchlist.
+        alert = Alert(is_new=True, created_at=created_at, domain=domain, watchlist=watchlist)
+        session.add(alert)
+        session.commit()
+        logging.info(f"Alert created for domain '{domain.name}' and watchlist '{watchlist.name}'")
+        # Send an email alert if configured.
+        if watchlist.send_alerts and watchlist.email:
+            logging.debug(f"Sending alert for domain '{domain.name}' and watchlist '{watchlist.name}' to '{watchlist.email}'")
+            # TODO send email alert
+            # TODO send alert into Slack (or something like that)
+
 
 # TODO remove
 print("-"*20 + "UPLOADING" + "-"*20)
 upload_t = process_batch("./test_data")
-print("-"*20 + "SEARCHING" + "-"*20)
-print(search_batch(upload_t))
 print("-"*20 + "DELETING" + "-"*20)
 opensearch.indices.delete(index=opensearch.index_id)
