@@ -32,3 +32,12 @@ class Alert(db.Model):
     def __repr__(self):
         """Represent the Alert model as a string."""
         return f'<Alert id={self.id}>'
+
+    def print_status(self) -> str:
+        """
+        Return the status of the alert.
+
+        Returns:
+            str: Alert status - 'New' or 'Registered'
+        """
+        return 'New' if self.is_new else 'Registered'
