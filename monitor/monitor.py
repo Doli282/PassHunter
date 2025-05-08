@@ -32,7 +32,7 @@ engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 @uploader.task(name='monitor.process_batch')
 def process_batch(folder_path: str):
     # Get the timestamp of the upload.
-    upload_time = datetime.datetime.now()
+    upload_time = datetime.datetime.now(datetime.timezone.utc)
     logging.info(f"Processing a new batch from '{folder_path}' at {upload_time.isoformat()}")
     # Upload all files in the folder to OpenSearch.
     upload_bulk(folder_path, upload_time.isoformat())
