@@ -24,7 +24,7 @@
         <tbody>
             {% for alert in pagination.items %}
         <tr>
-        <td>{{ alert.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}<noscript>{{ alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript></td>
             <td><a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a></td>
             <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{ alert.watchlist.name }}</a></td>
             <td>{{ alert.print_status() }}</td>
