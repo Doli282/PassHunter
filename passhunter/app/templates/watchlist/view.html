@@ -60,7 +60,7 @@
         </tbody>
         </table>
         {# Pagination #}
-        {{ macros.render_pagination(pagination, 'watchlist.list_watchlists') }}
+        {{ macros.render_pagination(pagination, 'watchlist.view_watchlist', watchlist_id=watchlist.id) }}
     {% else %}
         <p><i>There are no monitored domains in the watchlist yet.</i></p>
     {% endif %}
