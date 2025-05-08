@@ -27,7 +27,7 @@
                         <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">{{ watchlist.name }}</a></td>
                         <td>{{ watchlist.description }}</td>
                         <td>{{ watchlist.print_active() }}</td>
-                        <td>##</td>
+                        <td>{{ alert_count(watchlist_id=watchlist.id) }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

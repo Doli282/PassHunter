@@ -26,6 +26,10 @@ def create_app():
     # https://flask-login.readthedocs.io/en/latest/
     login.session_protection = 'strong'
 
+    # Register functions into jinja templates
+    from app.repository.alert import get_alert_count
+    app.jinja_env.globals.update(alert_count=get_alert_count)
+
     # Register the blueprints
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
