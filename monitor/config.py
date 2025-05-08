@@ -1,4 +1,4 @@
-"""Configuration of Celery for the Extractor."""
+"""Configuration for the Monitor."""
 
 import os
 from dotenv import load_dotenv
@@ -10,12 +10,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
 
 class ConfigUploader(Object):
-    """Configuration class for uploader vhost."""
+    """Configuration class for the Celery uploader vhost."""
     broker_url = os.getenv("UPLOADER_BROKER_URL")
-
-    imports = (
-        "uploader.tasks",
-    )
 
     # Declare named queues bound to direct exchanges
     task_queues = (
@@ -24,8 +20,12 @@ class ConfigUploader(Object):
 
     # Route specific tasks to the appropriate queue
     task_routes = {
-        "uploader.process_batch": {"queue": "uploads", "routing_key": "uploads"},
+        "monitor.process_batch": {"queue": "uploads", "routing_key": "uploads"},
     }
 
     # auto-create any queue routed-to
     task_create_missing_queues = True
+
+class Config(object):
+    """Miscellaneous configuration for the Monitor."""
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
