@@ -1,6 +1,7 @@
 """Uploader - uploading files to OpenSearch """
 import base64
 import datetime
+import hashlib
 import logging
 import os
 
@@ -12,7 +13,7 @@ from sqlalchemy.orm import Session
 from config import ConfigUploader, Config
 from opensearch.opensearch import Client
 
-from models import Alert, Domain, Watchlist
+from models import Alert, Domain, File, Watchlist
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Monitor: %(levelname)s: %(message)s'
@@ -86,9 +87,16 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
     actions = []
     # Iterate over all files in the folder.
     for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)
+
+        # Check if the file already exists in the database.
+        exists, digest = check_hash_in_db(file_path)
+        if exists:
+            logging.debug(f"File '{file}' already exists in the database (hash={digest.hex()}). Skipping.")
+            continue
         # Encode the data for upload.
         encoded_data = None
-        with open(os.path.join(folder_path, file), "rb") as f:
+        with open(file_path, "rb") as f:
             encoded_data = base64.b64encode(f.read()).decode('utf-8')
 
         # If the data could not be read, return False.
@@ -96,6 +104,8 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
             logging.error("Could not read data from file")
             continue
 
+        # Save the file to the database
+        create_file(file, digest)
         # Add the document upload to actions.
         actions.append(opensearch.prepare_bulk_upload(encoded_data, file, upload_time))
 
@@ -181,9 +191,54 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
             # TODO send email alert
             # TODO send alert into Slack (or something like that)
 
+def check_hash_in_db(file: str) -> tuple[bool, bytes | None]:
+    """
+    Check if the file already exists in the database.
+    Checks the files' hashes.
+
+    Args:
+        file (str): The file to check.
+
+    Returns:
+        tuple[bool, bytes | None]: A tuple containing a boolean indicating whether the file exists in the database, and the file's hash if it does.
+    """
+    digest = None
+    # Calculate the hash of the file.
+    with open(file, "rb") as f:
+        digest = hashlib.file_digest(f, 'sha512').digest()
+
+    # If the hash could not be calculated, return True.
+    if not digest:
+        logging.error("Could not calculate hash of file")
+        return True, None
+
+    # Check if the hash already exists in the database.
+    with Session(engine) as session:
+        file = session.scalar(select(File).where(File.hash == digest))
+        # If the file already exists, return True.
+        if file:
+            logging.debug(f"File '{file.name}' already exists in the database.")
+            return True, digest
+    return False, digest
+
+def create_file(filename: str, digest: bytes) -> File:
+    """
+    Create a new file in the database.
+
+    Args:
+        filename (str): The name of the file.
+        digest (bytes): The hash of the file.
+
+    Returns:
+        File: The created file.
+    """
+    file = File(name=filename, hash=digest)
+    with Session(engine) as session:
+        session.add(file)
+        session.commit()
+    return file
 
 # TODO remove
 print("-"*20 + "UPLOADING" + "-"*20)
-upload_t = process_batch("./test_data")
-print("-"*20 + "DELETING" + "-"*20)
-opensearch.indices.delete(index=opensearch.index_id)
+upload_t = process_batch(os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data"))
+print("-"*20 + "DONE" + "-"*20)
