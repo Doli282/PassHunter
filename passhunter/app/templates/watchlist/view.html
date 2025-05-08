@@ -52,7 +52,7 @@
             {% for domain in pagination.items %}
                 <tr>
                     <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
-                    <td>##</td>
+                    <td>{{ alert_count(watchlist_id=watchlist.id, domain_id=domain.id) }}</td>
                     <td>##</td>
                     <td><a href="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"></a>Remove</td>
                 </tr>
