@@ -142,3 +142,57 @@ Some files have different structures from other files.
 
 hashing: https://docs.python.org/3/library/hashlib.html#hashlib.file_digest
 hash stored as LargeBinary -> transforms into bytea in PG https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.LargeBinary
+
+
+# Alerting
+
+An alert is generated each time a domain on an active watchlist is detected in a new dataset.
+
+## Email
+
+An email is sent as a part of the alerting service.
+If a user has set an email address and activated the function, an email with an alert is sent.
+The email is sent using the gmail smtp.
+
+A gmail account has to be provided.
+This is feasible only when the application is used by a single user or a group of users.
+For production use, a real SMTP server shall be used.
+
+### How to set up the gmail account
+https://www.geeksforgeeks.org/how-to-send-beautiful-emails-in-python/
+
+1. Create a gmail account with 2FA enabled.
+2. Create a password for the application. https://myaccount.google.com/apppasswords
+3. Use the password and gmail account in the monitor.py script -> provide as env variable.
+4. Use gmail SMTP server for sending emails.
+
+```dotenv
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+EMAIL_SENDER=no-reply@passhunter.com
+```
+
+## Slack
+
+For OAuth the application needs a redirect URL (public IP)
+
+Notifications are sent to a channel in Slack.
+
+1. Create a Slack bot
+   1. Create an app
+      1. https://api.slack.com/quickstart#creating
+      2. go to `Your Apps`
+      3. Select `Create New App`
+      4. Select `From scratch`
+      5. Enter the `App Name` -> PassHunter Alerter
+      6. Select the `Workspace`
+      7. Select Create App
+   2. Request Scopes
+      1. In the menu under `Features` select `OAuth & Permissions`
+      2. Scroll down to `Scopes`
+      3. Under `Bot Token Scopes` select `Add an OAuth Scope`
+      4. Add `chat:write` to enable sending messages
+      5. Add `chat:write.customize` to enable change bot's username and icon
+   ....
