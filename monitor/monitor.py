@@ -260,7 +260,7 @@ def create_file(filename: str, digest: bytes) -> File:
         session.commit()
     return file
 
-def send_email(receiver_address: str, domain_name: str, watchlist_name: str, detected_at: str):
+def send_email(receiver_address: str, domain_name: str, watchlist_name: str, detected_at: str) -> None:
     """
     Send an alert via email using SMTP_SSL
 
