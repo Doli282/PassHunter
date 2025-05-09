@@ -39,10 +39,10 @@ async def handler(message: Message) -> None:
     # If the message contains a document, put it in a queue for further processing.
     try:
         if message.document:
-            logging.info(f"{message.file.name} put in download queue.")
+            logging.debug(f"{message.file.name} put in download queue.")
             await queue.put(message)
         else:
-            logging.info(f"Message id {message.id} does not contain documents.")
+            logging.debug(f"Message id {message.id} does not contain documents.")
     except Exception as e:
         logging.error(f"Error while processing (putting into asyncio queue) message id {message.id}: {e}")
 
@@ -66,6 +66,7 @@ async def worker(name: str) -> None:
 
             # Perform the actual download.
             await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
+            logging.debug(f"Worker '{name}' downloaded '{filename}'")
 
             # Extract a password from the message
             match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', message.raw_text, re.IGNORECASE)
@@ -78,8 +79,8 @@ async def worker(name: str) -> None:
 
 
             # Send a task to celery.
-            celery.send_task('extractor.extract_archive', args=[os.path.join(Config.DOWNLOAD_PATH, filename), password])
-            logging.debug(f"Worker '{name}' downloaded '{filename}'")
+            celery.send_task('extractor.extract_archive', args=[filename, password])
+            logging.debug(f"Worker '{name}' send '{filename}' to celery")
             # Notify the queue, the message has been processed.
             queue.task_done()
         except asyncio.TimeoutError as e:

@@ -19,39 +19,44 @@ uploader.config_from_object(ConfigUploader)
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Extractor: %(levelname)s: %(message)s'
-logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO)
+logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG)
 
 # Define filter for to-be-extracted files
 KEYWORDS = ["pass"]
 
+# Define paths for storing files
+DOWNLOAD_PATH = "/data/downloads"
+UPLOAD_PATH = "/data/uploads"
+
 @downloader.task(name='extractor.extract_archive')
-def extract_archive(archive_path: str, archive_password: str) -> None:
-    logging.info(f"Received request to extract '{archive_path}' with password '{archive_password}'")
+def extract_archive(archive_name: str, archive_password: str) -> None:
+    logging.info(f"Received request to extract '{archive_name}' with password '{archive_password}'")
+    archive_path = os.path.join(DOWNLOAD_PATH, archive_name)
 
     # Extract the archive into a new directory
-    destination = mkdtemp()
+    destination = mkdtemp(dir=UPLOAD_PATH,prefix=archive_name+"_")
 
     try:
         # Choose the extractor function based on the archive extension
-        match os.path.splitext(archive_path)[-1]:
+        match os.path.splitext(archive_name)[-1]:
             case '.zip':
                 extract_zip(archive_path, archive_password, destination)
             case '.rar':
                 extract_rar(archive_path, archive_password, destination)
             case _:
-                raise ValueError(f"Unsupported archive type '{os.path.splitext(archive_path)[-1]}'")
+                raise ValueError(f"Unsupported archive type '{archive_name}'")
         logging.info(f"Archive extracted")
     except Exception as e:
         logging.error(f"Failed to extract archive: {e}")
 
     try:
         # Send a message to the uploading queue
-        uploader.send_task('uploader.process_batch', args=[destination])
+        uploader.send_task('uploader.process_batch', args=[os.path.basename(destination)])
     except Exception as e:
         logging.error(f"Failed to send message to the uploading queue: {e}")
 
     # Remove the processed archive
-    _clean(archive_path)
+    #os.remove(archive_name)
     logging.info(f"Extractor has finished.")
     return
 
@@ -69,7 +74,7 @@ def extract_zip(archive_path: str, archive_password:str, extract_to: str) -> Non
     """
     logging.debug("Extracting zip archive.")
     # Save the name of the archive - use it for naming the extracted files
-    archive_name = os.path.splitext(archive_path)[-1]
+    archive_name = os.path.basename(archive_path)
 
     # Open the zip archive
     with zipfile.ZipFile(archive_path, 'r') as zip_ref:
@@ -82,7 +87,7 @@ def extract_zip(archive_path: str, archive_password:str, extract_to: str) -> Non
                 logging.debug(f"File '{file.filename}' found, extracting")
 
                 # Rename the file to flatten to structure
-                file_filename = os.path.splitext(file.filename)[-1]
+                file_filename = os.path.basename(file.filename)
                 new_filename = f"{archive_name}_{file_filename}_{i}"
                 out_path = os.path.join(extract_to, new_filename)
 
@@ -107,7 +112,7 @@ def extract_rar(archive_path: str, archive_password:str, extract_to: str) -> boo
     """
     logging.debug("Extracting rar archive.")
     # Save the name of the archive - use it for naming the extracted files
-    archive_name = os.path.splitext(archive_path)[-1]
+    archive_name = os.path.basename(archive_path)
 
     # Open the rar archive
     with rarfile.RarFile(archive_path) as rar_ref:
@@ -127,7 +132,7 @@ def extract_rar(archive_path: str, archive_password:str, extract_to: str) -> boo
                 logging.debug(f"File '{file.filename}' found, extracting")
 
                 # Rename the file to flatten to structure
-                file_filename = os.path.splitext(file.filename)[-1]
+                file_filename = os.path.basename(file.filename)
                 new_filename = f"{archive_name}_{file_filename}_{i}"
                 out_path = os.path.join(extract_to, new_filename)
 
@@ -151,16 +156,3 @@ def _filename_filter(filename: str) -> bool:
         bool: True if the file should be extracted, False otherwise.
     """
     return  any(word.lower() in filename.lower() for word in KEYWORDS)
-
-def _clean(archive: str):
-    """
-    Clean after extraction.
-
-    Args:
-        archive (str): Path to the archive.
-
-    Returns:
-        None
-    """
-    os.remove(archive)
-    logging.debug("Archived removed.")
