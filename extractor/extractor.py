@@ -31,20 +31,24 @@ def extract_archive(archive_path: str, archive_password: str) -> None:
     # Extract the archive into a new directory
     destination = mkdtemp()
 
-    # Choose the extractor function based on the archive extension
-    match os.path.splitext(archive_path)[-1]:
-        case '.zip':
-            extract_zip(archive_path, archive_password, destination)
-        case '.rar':
-            extract_rar(archive_path, archive_password, destination)
-        case _:
-            logging.error(f"Unsupported archive type '{os.path.splitext(archive_path)[-1]}'")
-            _clean(archive_path)
-            return
-    logging.info(f"Archive extracted")
+    try:
+        # Choose the extractor function based on the archive extension
+        match os.path.splitext(archive_path)[-1]:
+            case '.zip':
+                extract_zip(archive_path, archive_password, destination)
+            case '.rar':
+                extract_rar(archive_path, archive_password, destination)
+            case _:
+                raise ValueError(f"Unsupported archive type '{os.path.splitext(archive_path)[-1]}'")
+        logging.info(f"Archive extracted")
+    except Exception as e:
+        logging.error(f"Failed to extract archive: {e}")
 
-    # Send message to the uploading queue
-    uploader.send_task('uploader.process_batch', args=[destination])
+    try:
+        # Send a message to the uploading queue
+        uploader.send_task('uploader.process_batch', args=[destination])
+    except Exception as e:
+        logging.error(f"Failed to send message to the uploading queue: {e}")
 
     # Remove the processed archive
     _clean(archive_path)
