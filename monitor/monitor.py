@@ -44,7 +44,10 @@ def process_batch(folder_path: str):
     # Upload all files in the folder to OpenSearch.
     upload_bulk(folder_path, upload_time.isoformat())
     # Search for the domains in the uploaded batch.
-    search_batch(upload_time)
+    try:
+        search_batch(upload_time)
+    except Exception as e:
+        logging.error(f"Error searching for domains in the uploaded batch: {e}")
     return upload_time
 
 def upload_file(file_path: str, upload_time: str) -> bool:
@@ -94,28 +97,31 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
     actions = []
     # Iterate over all files in the folder.
     for file in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, file)
+        try:
+            file_path = os.path.join(folder_path, file)
 
-        # Check if the file already exists in the database.
-        exists, digest = check_hash_in_db(file_path)
-        if exists:
-            logging.debug(f"File '{file}' already exists in the database (hash={digest.hex()}). Skipping.")
+            # Check if the file already exists in the database.
+            exists, digest = check_hash_in_db(file_path)
+            if exists:
+                logging.debug(f"File '{file}' already exists in the database (hash={digest.hex()}). Skipping.")
+                continue
+            # Encode the data for upload.
+            encoded_data = None
+            with open(file_path, "rb") as f:
+                encoded_data = base64.b64encode(f.read()).decode('utf-8')
+
+            # If the data could not be read, return False.
+            if not encoded_data:
+                logging.error("Could not read data from file")
+                continue
+
+            # Save the file to the database
+            create_file(file, digest)
+            # Add the document upload to actions.
+            actions.append(opensearch.prepare_bulk_upload(encoded_data, file, upload_time))
+        except Exception as e:
+            logging.error(f"Error uploading file '{file}': {e}")
             continue
-        # Encode the data for upload.
-        encoded_data = None
-        with open(file_path, "rb") as f:
-            encoded_data = base64.b64encode(f.read()).decode('utf-8')
-
-        # If the data could not be read, return False.
-        if not encoded_data:
-            logging.error("Could not read data from file")
-            continue
-
-        # Save the file to the database
-        create_file(file, digest)
-        # Add the document upload to actions.
-        actions.append(opensearch.prepare_bulk_upload(encoded_data, file, upload_time))
-
     # Perform the bulk upload.
     success = 0
     try:
@@ -143,11 +149,15 @@ def search_batch(uploaded_at: datetime.datetime) -> None:
     with Session(engine) as session:
         # Search for each domain in the batch.
         for domain in session.scalars(statement).all():
-            hit_count = search_for_domain(domain, uploaded_at)
-            logging.debug(f"Domain found {hit_count} times.")
-            # When the domain is found, create alerts for each watchlist associated with the domain.
-            if hit_count > 0:
-                make_alerts(domain, uploaded_at, session)
+            try:
+                hit_count = search_for_domain(domain, uploaded_at)
+                logging.debug(f"Domain found {hit_count} times.")
+                # When the domain is found, create alerts for each watchlist associated with the domain.
+                if hit_count > 0:
+                    make_alerts(domain, uploaded_at, session)
+            except Exception as e:
+                logging.error(f"Error searching for domain '{domain.name}': {e}")
+                continue
 
 def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime) -> int:
     """
@@ -188,10 +198,13 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
             logging.debug(f"Watchlist [{watchlist.id}] '{watchlist.name}' is not active. Skipping.")
             continue
         # Create an alert for the watchlist.
-        alert = Alert(is_new=True, created_at=created_at, domain=domain, watchlist=watchlist)
-        session.add(alert)
-        session.commit()
-        logging.info(f"Alert created for domain '{domain.name}' and watchlist '{watchlist.name}'")
+        try:
+            alert = Alert(is_new=True, created_at=created_at, domain=domain, watchlist=watchlist)
+            session.add(alert)
+            session.commit()
+            logging.info(f"Alert created for domain '{domain.name}' and watchlist '{watchlist.name}'")
+        except Exception as e:
+            logging.error(f"Error creating alert for domain '{domain.name}' and watchlist '{watchlist.name}': {e}")
         # Send an email alert if configured.
         if watchlist.send_alerts and watchlist.email:
             try:
