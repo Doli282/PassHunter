@@ -85,7 +85,7 @@ services:
       db:
          condition: service_healthy
       opensearch:
-        condition: service_healthy
+         condition: service_healthy
     networks:
       - hunter-network
     volumes:
@@ -97,6 +97,11 @@ services:
       OPENSEARCH_USER: "${OPENSEARCH_USER}"
       OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
       UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
+      MAIL_SERVER: "${MAIL_SERVER}"
+      MAIL_PORT: "${MAIL_PORT}"
+      MAIL_USERNAME: "${MAIL_USERNAME}"
+      MAIL_PASSWORD: "${MAIL_PASSWORD}"
+      EMAIL_SENDER: "${EMAIL_SENDER}"
 
   web:
     container_name: web
