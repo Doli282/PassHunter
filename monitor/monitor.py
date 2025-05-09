@@ -19,7 +19,7 @@ from models import Alert, Domain, File, Watchlist
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Monitor: %(levelname)s: %(message)s'
-logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO)
+logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG)
 
 # Celery - Uploader
 uploader = Celery('uploader')
@@ -31,23 +31,20 @@ opensearch = Client()
 # Engine for connecting to the database.
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 
-SMTP_SERVER = os.getenv("MAIL_SERVER", "")
-SMTP_PORT = int(os.getenv("MAIL_PORT", 0))
-SMTP_USERNAME = os.getenv("MAIL_USERNAME")
-SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
-
 @uploader.task(name='monitor.process_batch')
-def process_batch(folder_path: str):
+def process_batch(directory_name: str):
+    directory_path = os.path.join(Config.DATA_PATH, directory_name)
     # Get the timestamp of the upload.
     upload_time = datetime.datetime.now(datetime.timezone.utc)
-    logging.info(f"Processing a new batch from '{folder_path}' at {upload_time.isoformat()}")
+    logging.info(f"Processing a new batch from '{directory_name}' at {upload_time.isoformat()}")
     # Upload all files in the folder to OpenSearch.
-    upload_bulk(folder_path, upload_time.isoformat())
+    upload_bulk(directory_path, upload_time.isoformat())
     # Search for the domains in the uploaded batch.
     try:
         search_batch(upload_time)
     except Exception as e:
         logging.error(f"Error searching for domains in the uploaded batch: {e}")
+    #os.remove(directory_path)
     return upload_time
 
 def upload_file(file_path: str, upload_time: str) -> bool:
@@ -82,12 +79,12 @@ def upload_file(file_path: str, upload_time: str) -> bool:
         logging.error(f"Error uploading file: {e}")
         return False
 
-def upload_bulk(folder_path: str, upload_time: str) -> None:
+def upload_bulk(directory_path: str, upload_time: str) -> None:
     """
     Upload all files in a folder to OpenSearch in one API call.
 
     Args:
-        folder_path (str): The path to the folder.
+        directory_path (str): The path to the folder.
         upload_time (str): The upload time.
 
     Returns:
@@ -96,9 +93,9 @@ def upload_bulk(folder_path: str, upload_time: str) -> None:
     # List of actions to be taken care of during the API call to OpenSearch.
     actions = []
     # Iterate over all files in the folder.
-    for file in os.listdir(folder_path):
+    for file in os.listdir(directory_path):
         try:
-            file_path = os.path.join(folder_path, file)
+            file_path = os.path.join(directory_path, file)
 
             # Check if the file already exists in the database.
             exists, digest = check_hash_in_db(file_path)
@@ -303,8 +300,8 @@ def send_email(receiver_address: str, domain_name: str, watchlist_name: str, det
 
     logging.info(f"Sending alert for domain '{domain_name}' and watchlist '{watchlist_name}' to '{receiver_address}'")
     # Send the email using SMTP_SSL
-    with smtplib.SMTP_SSL(host=SMTP_SERVER, port=SMTP_PORT) as smtp:
-        smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+    with smtplib.SMTP_SSL(host=Config.SMTP_SERVER, port=Config.SMTP_PORT) as smtp:
+        smtp.login(Config.SMTP_USERNAME, Config.SMTP_PASSWORD)
         smtp.send_message(message)
         return
 

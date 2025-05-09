@@ -29,3 +29,8 @@ class ConfigUploader(Object):
 class Config(object):
     """Miscellaneous configuration for the Monitor."""
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+    SMTP_SERVER = os.getenv("MAIL_SERVER", "")
+    SMTP_PORT = int(os.getenv("MAIL_PORT", 0))
+    SMTP_USERNAME = os.getenv("MAIL_USERNAME")
+    SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
+    DATA_PATH = "/data"

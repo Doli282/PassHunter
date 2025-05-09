@@ -18,7 +18,7 @@ class Config(object):
     LOGGING_FORMAT = '%(asctime)s Downloader: %(levelname)s: %(message)s'
     # Application
     WORKER_COUNT = 4
-    DOWNLOAD_PATH = '/tmp'
+    DOWNLOAD_PATH = '/data'
 
 class ConfigCelery(object):
     """Celery configuration class."""
