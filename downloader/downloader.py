@@ -37,12 +37,14 @@ async def handler(message: Message) -> None:
     """
     logging.info(f"Processing message id {message.id}")
     # If the message contains a document, put it in a queue for further processing.
-    if message.document:
-        logging.info(f"{message.file.name} put in download queue.")
-        await queue.put(message)
-    else:
-        logging.info(f"Message id {message.id} does not contain documents.")
-
+    try:
+        if message.document:
+            logging.info(f"{message.file.name} put in download queue.")
+            await queue.put(message)
+        else:
+            logging.info(f"Message id {message.id} does not contain documents.")
+    except Exception as e:
+        logging.error(f"Error while processing (putting into asyncio queue) message id {message.id}: {e}")
 
 async def worker(name: str) -> None:
     """
