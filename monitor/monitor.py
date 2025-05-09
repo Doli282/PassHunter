@@ -4,6 +4,8 @@ import datetime
 import hashlib
 import logging
 import os
+import smtplib
+from email.message import EmailMessage
 
 from celery import Celery
 from opensearchpy import helpers
@@ -28,6 +30,11 @@ opensearch = Client()
 
 # Engine for connecting to the database.
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+
+SMTP_SERVER = os.getenv("MAIL_SERVER", "")
+SMTP_PORT = int(os.getenv("MAIL_PORT", 0))
+SMTP_USERNAME = os.getenv("MAIL_USERNAME")
+SMTP_PASSWORD = os.getenv("MAIL_PASSWORD")
 
 @uploader.task(name='monitor.process_batch')
 def process_batch(folder_path: str):
@@ -187,8 +194,10 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
         logging.info(f"Alert created for domain '{domain.name}' and watchlist '{watchlist.name}'")
         # Send an email alert if configured.
         if watchlist.send_alerts and watchlist.email:
-            logging.debug(f"Sending alert for domain '{domain.name}' and watchlist '{watchlist.name}' to '{watchlist.email}'")
-            # TODO send email alert
+            try:
+                send_email(watchlist.email, domain.name, watchlist.name, created_at.strftime("%Y-%m-%d %H:%M UTC"))
+            except Exception as e:
+                logging.error(f"Error sending email alert to {watchlist.email}: {e}")
             # TODO send alert into Slack (or something like that)
 
 def check_hash_in_db(file: str) -> tuple[bool, bytes | None]:
@@ -238,7 +247,56 @@ def create_file(filename: str, digest: bytes) -> File:
         session.commit()
     return file
 
+def send_email(receiver_address: str, domain_name: str, watchlist_name: str, detected_at: str):
+    """
+    Send an alert via email using SMTP_SSL
+
+    Args:
+        receiver_address (str): The email address of the receiver.
+        domain_name (str): The name of the domain for which the alert was raised.
+        watchlist_name (str): The name of the watchlist which generated the alert.
+        detected_at (str): The timestamp of the alert.
+
+    Returns:
+        None
+    """
+    subject = "[PassHunter] Alert - domain found!"
+    body = f"""\
+    Hello,
+
+    A domain from your watchlist has just been detected in newly discovered leaked data.
+
+    • Domain: {domain_name}  
+    • Watchlist: {watchlist_name}
+    • Detected: {detected_at}
+
+    This may indicate that credentials or sensitive information related to this domain have been exposed.
+
+    Recommend reaction:
+    - Reset passwords or access credentials if applicable
+    - Monitor suspicious activity
+    - Investigate the possible source of the leak
+
+    Stay safe,  
+    — PassHunter
+    """
+
+    # Prepare the email message
+    message = EmailMessage()
+    message['Subject'] = subject
+    message['From'] = os.getenv("EMAIL_SENDER")
+    message['To'] = receiver_address
+    message.set_content(body)
+
+    logging.info(f"Sending alert for domain '{domain_name}' and watchlist '{watchlist_name}' to '{receiver_address}'")
+    # Send the email using SMTP_SSL
+    with smtplib.SMTP_SSL(host=SMTP_SERVER, port=SMTP_PORT) as smtp:
+        smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+        smtp.send_message(message)
+        return
+
 # TODO remove
 print("-"*20 + "UPLOADING" + "-"*20)
 upload_t = process_batch(os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data"))
 print("-"*20 + "DONE" + "-"*20)
+send_email("dolanskyl2@gmail.com", "test", "test", upload_t.strftime("%Y-%m-%d %H:%M UTC"))
