@@ -4,6 +4,7 @@ import datetime
 import hashlib
 import logging
 import os
+import shutil
 import smtplib
 from email.message import EmailMessage
 
@@ -45,7 +46,10 @@ def process_batch(directory_name: str):
     except Exception as e:
         logging.error(f"Error searching for domains in the uploaded batch: {e}")
     # Clean uploaded data
-    os.remove(directory_path)
+    try:
+        shutil.rmtree(directory_path)
+    except Exception as e:
+        logging.error(f"Error cleaning uploaded data: {e}")
     return upload_time
 
 def upload_file(file_path: str, upload_time: str) -> bool:
