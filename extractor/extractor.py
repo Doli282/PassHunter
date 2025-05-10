@@ -20,14 +20,14 @@ uploader.config_from_object(ConfigUploader)
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Extractor: %(levelname)s: %(message)s'
-logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG)
+logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO)
 
 # Define filter for to-be-extracted files
 KEYWORDS = ["pass"]
 
 # Define paths for storing files
-DOWNLOAD_PATH = "/tmp/downloads"
-UPLOAD_PATH = "/tmp/uploads"
+DOWNLOAD_PATH = "/data/downloads"
+UPLOAD_PATH = "/data/uploads"
 
 @downloader.task(name='extractor.extract_archive')
 def extract_archive(archive_name: str, archive_password: str, archive_dir: str = DOWNLOAD_PATH, destination_path: str = UPLOAD_PATH, keywords: list[str] = KEYWORDS) -> None:
@@ -76,6 +76,12 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
                         except Exception as e:
                             logging.error(f"Failed to move file '{filename}': {e}")
                             continue
+
+            logging.debug(f"Extracted archive '{archive_name}' to '{destination}'")
+            # After the extraction, send the destination of the extracted files as a task to celery queue.
+            destination_name = os.path.basename(destination)
+            uploader.send_task("monitor.process_batch", args=[destination_name])
+            logging.info(f"Task with destination '{destination_name}' sent to celery.")
 
         # Catch exception caused by patoolib.
         except patoolib.util.PatoolError as e:

@@ -66,7 +66,7 @@ async def worker(name: str) -> None:
 
             # Perform the actual download.
             await message.download_media(os.path.join(Config.DOWNLOAD_PATH, filename))
-            logging.debug(f"Worker '{name}' downloaded '{filename}'")
+            logging.info(f"Worker '{name}' downloaded '{filename}'")
 
             # Extract a password from the message
             match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', message.raw_text, re.IGNORECASE)
@@ -80,7 +80,7 @@ async def worker(name: str) -> None:
 
             # Send a task to celery.
             celery.send_task('extractor.extract_archive', args=[filename, password])
-            logging.debug(f"Worker '{name}' send '{filename}' to celery")
+            logging.info(f"Worker '{name}' send '{filename}' to celery")
             # Notify the queue, the message has been processed.
             queue.task_done()
         except asyncio.TimeoutError as e:

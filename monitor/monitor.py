@@ -19,7 +19,7 @@ from models import Alert, Domain, File, Watchlist
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Monitor: %(levelname)s: %(message)s'
-logging.basicConfig(format=LOGGING_FORMAT, level=logging.DEBUG)
+logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO)
 
 # Celery - Uploader
 uploader = Celery('uploader')
