@@ -7,7 +7,7 @@ RUN sed -i 's/Components: main/Components: main contrib non-free/' /etc/apt/sour
 
 # Update package lists and install unrar
 RUN apt-get update && \
-    apt-get install -y unrar p7zip-full && \
+    apt-get install -y file unrar p7zip-full && \
     rm -rf /var/lib/apt/lists/*
 
 # Install required packages
