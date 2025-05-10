@@ -305,9 +305,3 @@ def send_email(receiver_address: str, domain_name: str, watchlist_name: str, det
         smtp.login(Config.SMTP_USERNAME, Config.SMTP_PASSWORD)
         smtp.send_message(message)
         return
-
-# TODO remove
-print("-"*20 + "UPLOADING" + "-"*20)
-upload_t = process_batch(os.path.join(os.path.abspath(os.path.dirname(__file__)), "test_data"))
-print("-"*20 + "DONE" + "-"*20)
-send_email("dolanskyl2@gmail.com", "test", "test", upload_t.strftime("%Y-%m-%d %H:%M UTC"))
