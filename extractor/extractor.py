@@ -30,7 +30,7 @@ DOWNLOAD_PATH = "/data/downloads"
 UPLOAD_PATH = "/data/uploads"
 
 @downloader.task(name='extractor.extract_archive')
-def extract_archive(archive_name: str, archive_password: str, archive_dir: str = DOWNLOAD_PATH, destination_path: str = UPLOAD_PATH, keywords: list[str] = KEYWORDS) -> None:
+def extract_archive(archive_name: str, archive_password: str, archive_dir: str = DOWNLOAD_PATH, destination_path: str = UPLOAD_PATH, keywords: list[str] = KEYWORDS) -> str:
     """
     Extract an archive.
     The archive is extracted to a temporary directory and then moved to the destination directory.
@@ -43,7 +43,7 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
         keywords (list[str]): List of keywords to filter files by.
 
     Returns:
-        None
+        str: Name of the destination directory.
     """
     logging.info(f"Received request to extract '{archive_name}' with password '{archive_password}'")
     archive_path = os.path.join(archive_dir, archive_name)
@@ -60,7 +60,7 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
 
             # Move significant files to destination directory
             destination = mkdtemp(dir=destination_path)
-
+            print("destianation: ", destination)
             # Walk through the extracted archive and pick wanted files.
             i = 0 # Iteration variable to distinguish files with the same name.
             for root, _, files in os.walk(tmpdir):
@@ -69,7 +69,7 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
                     if _filename_filter(filename, keywords):
                         try:
                             # Flatten the directory structure and rename the file.
-                            dest_filename = f"{archive_name}_{filename}_{i}".replace(' ', '_')
+                            dest_filename = f"{archive_name}_{i}_{filename}".replace(' ', '_')
                             shutil.move(os.path.join(root, filename), os.path.join(destination, dest_filename))
                             i += 1
                             logging.debug(f"File '{filename}' moved to '{dest_filename}'")
@@ -86,21 +86,21 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
         # Catch exception caused by patoolib.
         except patoolib.util.PatoolError as e:
             logging.error(f"Failed to extract archive: {e}")
-            return
+            return ""
         # Catch exceptions caused by invalid values.
         except ValueError as e:
             logging.error(f"Failed to extract archive: {e}")
-            return
+            return ""
         # Catch all remaining exceptions.
         except Exception as e:
             logging.error(f"Failed to extract archive: {e}")
-            return
+            return ""
         finally:
             # Cleanup
             os.remove(archive_path)
 
     logging.info(f"Extractor has finished.")
-    return
+    return destination
 
 def _filename_filter(filename: str, keywords: list[str]) -> bool:
     """
