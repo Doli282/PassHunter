@@ -49,3 +49,12 @@ Run:
 ```shell
 python3 forwarder.py
 ```
+
+## Testing
+
+Test scenarios are described in the /test/ directory.
+
+To launch the automated test, run the following command from the module root directory:
+```shell
+python3 -m unittest tests/test_forward.py
+```
