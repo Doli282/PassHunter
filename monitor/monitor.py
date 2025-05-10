@@ -44,7 +44,8 @@ def process_batch(directory_name: str):
         search_batch(upload_time)
     except Exception as e:
         logging.error(f"Error searching for domains in the uploaded batch: {e}")
-    #os.remove(directory_path)
+    # Clean uploaded data
+    os.remove(directory_path)
     return upload_time
 
 def upload_file(file_path: str, upload_time: str) -> bool:
