@@ -20,7 +20,7 @@ uploader.config_from_object(ConfigUploader)
 
 # Set up logging
 LOGGING_FORMAT = '%(asctime)s Extractor: %(levelname)s: %(message)s'
-logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO)
+logging.basicConfig(format=LOGGING_FORMAT, level=os.getenv("LOGGING_LEVEL", "INFO"))
 
 # Define filter for to-be-extracted files
 KEYWORDS = ["pass"]
