@@ -35,6 +35,20 @@ Thus, despite having the .zip extension, the archive cannot be extracted.
 It knows the directory structure of the archive content, but it is unable to extract the individual files due to an unknown format.
 Hence, this method was deemed unsufficient, since AES-encrypted archives are quite prevalent. 
 
+Snippet showing a function selecting only intended files to extract:
+```python
+# Open the zip archive
+with zipfile.ZipFile(archive_path, 'r') as zip_ref:
+    # Iteration variable for naming
+    i = 1
+    # Read information on all files and filter only desired files
+    for file in zip_ref.infolist():
+        if _filename_filter(file.filename):
+            # Extract the file
+            zip_ref.extract(file, extract_to_dir, bytes(archive_password, 'utf-8') if archive_password else None)
+            i += 1
+```
+
 The second approach is to use a tool that can find the most appropriate tool for the extraction by itself.
 Thanks to this, only a single function is necessary to invoke the extraction.
 On the other hand, these general tools offer only general API functions that are supported by all tools discarding specific features of individual tools.
