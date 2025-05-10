@@ -1,4 +1,6 @@
 """Initialize the PassHunter web application."""
+import os
+
 from flask import Flask
 
 from app.extensions import migrate, moment, login
@@ -60,7 +62,7 @@ def create_app():
         set_mail_error_reporting(app)
         set_rotating_log_file(app)
 
-        app.logger.setLevel('INFO')
+        app.logger.setLevel(os.getenv("LOGGING_LEVEL", "INFO"))
         app.logger.info('PassHunter has started')
 
     return app
