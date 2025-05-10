@@ -10,6 +10,7 @@ apt install p7zip-full
 ```shell
 pip install patool
 pip install celery
+pip install python-dotenv
 ```
 
 ## Extraction
