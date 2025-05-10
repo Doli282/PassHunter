@@ -11,7 +11,7 @@ from telethon.tl.custom import Message
 from config import Config, ConfigCelery
 
 # Set up logging.
-logging.basicConfig(format=Config.LOGGING_FORMAT, level=logging.INFO)
+logging.basicConfig(format=Config.LOGGING_FORMAT, level=os.getenv("LOGGING_LEVEL", "INFO"))
 
 # Set up the Telegram client.
 client = TelegramClient(session=Config.SESSION,api_id=int(Config.API_ID), api_hash=Config.API_HASH)
