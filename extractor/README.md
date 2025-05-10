@@ -31,3 +31,12 @@ Run as a Celery worker:
 ```shell
 celery -A extractor worker --loglevel=info --queues=downloads
 ```
+
+## Testing
+
+Test scenarios are described in the /test/ directory.
+
+Run a pytest from the module root directory with the required packages installed:
+```shell
+venv-extractor/bin/pytest 
+```

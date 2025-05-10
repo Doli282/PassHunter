@@ -12,6 +12,7 @@ apt install file # For detecting the file type
 pip install patool
 pip install celery
 pip install python-dotenv
+pip install pytest
 ```
 
 ## Extraction
