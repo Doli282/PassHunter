@@ -9,11 +9,12 @@ The following models are defined:
 - account
 - alert
 - domain
+- file
 - watchlist
 
 ## Installation
 
-Local installation for testing:
+Local installation for testing and development:
 ```shell
 pip install -e models
 ```
