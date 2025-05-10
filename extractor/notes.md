@@ -5,6 +5,7 @@ Dependencies:
 ```shell
 apt install unrar
 apt install p7zip-full
+apt install file # For detecting the file type
 ```
 
 ```shell
