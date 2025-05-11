@@ -13,6 +13,8 @@ Forward new messages to the specified channel.
 
 1. Send messages to the source channels
     - send messages with files
+      - attach one file
+      - attach multiple files in group
     - send messages without files
     - send messages to all defined source channels
 
@@ -20,3 +22,4 @@ Forward new messages to the specified channel.
 
 Messages with documents are forwarded to the destination channel.
 Messages without files are not forwarded.
+Messages with many documents are forwarded in multiple messages - one message per document.
