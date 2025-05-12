@@ -18,6 +18,7 @@ services:
       - "5672:${RABBIT_PORT}"
       - "15672:15672"
     healthcheck:
+      # Health check according to the documentation: https://www.rabbitmq.com/docs/monitoring#health-checks
       test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
       interval: 5s
       timeout: 5s
