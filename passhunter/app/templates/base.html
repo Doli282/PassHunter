@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 
 <head>
     <meta charset="UTF-8">
@@ -69,6 +69,7 @@
 
     {# JavaScript #}
     {{ moment.include_moment() }}
+    <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

@@ -7,64 +7,71 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Watchlist - {{ watchlist.name }}</h1>
-    {# Watchlist details #}
-    <div class="definition-list-group">
-        <dl>
-            <dt>Description</dt>
-            <dd>{{ watchlist.description }}</dd>
-            <dt>Status</dt>
-            <dd>{{ watchlist.print_active() }}</dd>
-            <dt>Notification Email</dt>
-            <dd>{{ watchlist.email|default('<i>Not defined</i>') }}</dd>
-            <dt>Email Alerts</dt>
-            <dd>{{ watchlist.print_send_alerts() }}</dd>
-        </dl>
-        {# Links for modifying the watchlist #}
-        <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}" class="btn btn-primary">Edit</a>
-        <a href="{{ url_for('watchlist.delete_watchlist', watchlist_id=watchlist.id) }}" class="btn btn-danger">Delete</a>
-    </div>
+<h1>Watchlist - {{ watchlist.name }}</h1>
+{# Watchlist details #}
+<div class="definition-list-group">
+    <dl>
+        <dt>Description</dt>
+        <dd>{{ watchlist.description }}</dd>
+        <dt>Status</dt>
+        <dd>{{ watchlist.print_active() }}</dd>
+        <dt>Notification Email</dt>
+        <dd>{{ watchlist.email|default('<i>Not defined</i>') }}</dd>
+        <dt>Email Alerts</dt>
+        <dd>{{ watchlist.print_send_alerts() }}</dd>
+    </dl>
+    {# Links for modifying the watchlist #}
+    <a href="{{ url_for('watchlist.edit_watchlist', watchlist_id=watchlist.id) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ url_for('watchlist.delete_watchlist', watchlist_id=watchlist.id) }}" class="btn btn-danger">Delete</a>
+</div>
 
-    {# Monitored domains #}
-    <h2>Monitored domains</h2>
-    {# Form for adding new domains #}
+{# Monitored domains #}
+<h2>Monitored domains</h2>
+{# Form for adding new domains #}
+<button class="btn btn-secondary mb-4" data-js data-toggle-trigger data-toggle-target="#add-domain-form-container"
+    data-toggle-text="Hide Add Domain Form" aria-expanded="false" aria-controls="add-domain-form-container">
+    Add New Domain
+</button>
+<div id="add-domain-form-container">
     <form action="" method="POST" class="form-container">
         {{ form.hidden_tag() }}
         <p>
             {{ form.name.label }}
             {{ form.name }}
             {% for error in form.name.errors %}
-                <span>{{ error }}</span>
+            <span class="form-error">{{ error }}</span>
             {% endfor %}
         </p>
         {{ form.submit(class="btn btn-primary") }}
     </form>
-    {# Table of monitored domains #}
-    {% if pagination.items %}
-        <table>
-        <thead>
-            <tr>
-                <th>Domain</th>
-                <th>#Alerts</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for domain in pagination.items %}
-                <tr>
-                    <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
-                    <td>{{ alert_count(watchlist_id=watchlist.id, domain_id=domain.id) }}</td>
-                    <td>##</td>
-                    <td><a href="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}" class="btn btn-danger">Remove</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        {# Pagination #}
-        {{ macros.render_pagination(pagination, 'watchlist.view_watchlist', watchlist_id=watchlist.id) }}
-    {% else %}
-        <p><i>There are no monitored domains in the watchlist yet.</i></p>
-    {% endif %}
+</div>
+{# Table of monitored domains #}
+{% if pagination.items %}
+<table>
+    <thead>
+        <tr>
+            <th>Domain</th>
+            <th>#Alerts</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for domain in pagination.items %}
+        <tr>
+            <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
+            <td>{{ alert_count(watchlist_id=watchlist.id, domain_id=domain.id) }}</td>
+            <td>##</td>
+            <td><a href="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"
+                    class="btn btn-danger">Remove</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# Pagination #}
+{{ macros.render_pagination(pagination, 'watchlist.view_watchlist', watchlist_id=watchlist.id) }}
+{% else %}
+<p><i>There are no monitored domains in the watchlist yet.</i></p>
+{% endif %}
 
 {% endblock %}

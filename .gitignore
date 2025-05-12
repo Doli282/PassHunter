@@ -179,6 +179,11 @@ cython_debug/
 
 # Exclude sessions from version control
 *.session
+
+# Exclude cursor rules
 passhunter/.cursor/rules/citation.mdc
 passhunter/.cursor/rules/do-not-change.mdc
 passhunter/.cursor/rules/use-css-js.mdc
+
+# Exclude database
+passhunter/app.db

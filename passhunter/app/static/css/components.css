@@ -374,3 +374,8 @@ prompt: Update alert styles, flash messages, error messages, and button styles
         width: 100%;
     }
 }
+
+/* Hide toggle triggers when JS is disabled */
+.no-js [data-js] {
+    display: none;
+}
