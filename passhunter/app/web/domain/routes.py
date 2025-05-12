@@ -40,5 +40,7 @@ def view_domain(domain_id: int) -> str:
     """
     domain = domain_repository.get_by_id(domain_id)
     page = request.args.get('page', 1, type=int)
-    pagination = alert_repository.get_page_all(page)
+    filters = {'domain_id': domain_id}
+    pagination = alert_repository.get_page_all(page, filters)
+    
     return render_template('domain/view.html', domain=domain, pagination=pagination, empty_form=EmptyForm())

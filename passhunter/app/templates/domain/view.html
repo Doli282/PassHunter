@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
 {% block title %}Domain detail - PassHunter{% endblock %}
 
@@ -6,20 +7,25 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Domain {{ domain.name }}</h1>
-    <h2>This domain is monitored in the following watchlists:</h2>
-    {% if domain.watchlists %}
-        {# List with watchlist monitoring this domain #}
-        <ul>
-            {% for watchlist in domain.watchlists %}
-                <li><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">{{ watchlist.name }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p><i>The domain is not monitored in any view.</i></p>
-    {% endif %}
+<h1>Domain {{ domain.name }}</h1>
+<h2>This domain is monitored in the following watchlists:</h2>
+{% if domain.watchlists %}
+{# List with watchlist monitoring this domain #}
+<ul>
+    {% for watchlist in domain.watchlists %}
+    <li><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">{{ watchlist.name }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p><i>The domain is not monitored in any view.</i></p>
+{% endif %}
 
     {# List alerts for the domain #}
     <h2>There are the following alerts related to the domain:</h2>
-    {% include "alert/partial_alert_table.html" %}
+    {% if pagination.items %}
+        {% include "alert/partial_alert_table.html" %}
+        {{ macros.render_pagination(pagination, 'domain.view_domain', domain_id=domain.id) }}
+    {% else %}
+        <p><i>Good news! You do not have any alerts. ...Have you set up the watchlists properly?</i></p>
+    {% endif %}
 {% endblock %}
