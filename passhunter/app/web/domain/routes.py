@@ -3,8 +3,10 @@
 from flask import render_template, request
 from flask_login import login_required
 
+from app.web import EmptyForm
 from app.web.domain import bp as bp_domains
 from app.repository import domain as domain_repository
+from app.repository import alert as alert_repository
 
 @bp_domains.route('/domains')
 @login_required
@@ -37,4 +39,6 @@ def view_domain(domain_id: int) -> str:
         404 Not Found: If the domain with the specified ID does not exist.
     """
     domain = domain_repository.get_by_id(domain_id)
-    return render_template('domain/view.html', domain=domain)
+    page = request.args.get('page', 1, type=int)
+    pagination = alert_repository.get_page_all(page)
+    return render_template('domain/view.html', domain=domain, pagination=pagination, empty_form=EmptyForm())

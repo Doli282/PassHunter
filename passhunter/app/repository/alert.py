@@ -53,7 +53,7 @@ def get_page_all(page: int = 1) -> Pagination:
     # Get all watchlists for the current user
     watchlists = _select_watchlists_for_user(current_user).subquery()
     # Get all alerts
-    query_alerts = db.select(Alert).join(watchlists, Alert.watchlist_id == watchlists.c.id)
+    query_alerts = db.select(Alert).join(watchlists, Alert.watchlist_id == watchlists.c.id).order_by(Alert.is_new.desc(), Alert.created_at.desc())
     return db.paginate(select=query_alerts, page=page,max_per_page=current_app.config['PER_PAGE'])
 
 def get_alert_by_id(alert_id: int) -> Alert:
