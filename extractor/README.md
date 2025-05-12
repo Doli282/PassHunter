@@ -10,20 +10,36 @@ Extractor extracts archives.
 4. A message with a path to extracted files is sent to the second message queue.
 5. The Original archive is removed.
 
-Supported arhive formats:
-- zip
-- rar
-
 ## Installation
+
+Install tools used by `patool` for extraction:
+```shell
+apt install unrar
+apt install p7zip-full
+apt install file
+# Add other tools as needed
+```
 
 Make a virtual environment and install requirements from `requirements.txt`.
 ```shell
 pip install -r requirements.txt
+
+# or install individual packages:
+pip install patool
+pip install celery
+pip install python-dotenv
+pip install pytest
 ```
 
 ## Configuration
 
 Configure the message queues for Celery in `celeryconfig.py`.
+
+Set environment variables:
+```dotenv
+UPLOADER_BROKER_URL=...
+DOWNLOADER_BROKER_URL=...
+```
 
 ## Usage
 

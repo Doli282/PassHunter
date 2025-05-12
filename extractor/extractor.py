@@ -60,7 +60,6 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
 
             # Move significant files to destination directory
             destination = mkdtemp(dir=destination_path)
-            print("destianation: ", destination)
             # Walk through the extracted archive and pick wanted files.
             i = 0 # Iteration variable to distinguish files with the same name.
             for root, _, files in os.walk(tmpdir):
