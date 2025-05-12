@@ -375,6 +375,33 @@ prompt: Update alert styles, flash messages, error messages, and button styles
     }
 }
 
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    /* Adjust padding for size */
+    font-size: 75%;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: var(--radius-full);
+    /* Make it pill-shaped or circular */
+    background-color: var(--color-danger);
+    color: var(--color-white);
+}
+
+/* Optional: Position badge within a link */
+.nav-item .badge {
+    position: relative;
+    /* Or absolute depending on exact placement desired */
+    top: -0.5em;
+    /* Adjust vertical position */
+    margin-left: var(--spacing-1);
+    /* Add some space */
+}
+
 /* Hide toggle triggers when JS is disabled */
 .no-js [data-js] {
     display: none;

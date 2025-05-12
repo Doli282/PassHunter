@@ -34,10 +34,31 @@ def get_count_by_domain_and_watchlist(domain_id: int, watchlist_id: int) -> int:
     return db.session.scalar(db.select(db.func.count(Alert.id)).filter(and_(Alert.domain_id == domain_id, Alert.watchlist_id == watchlist_id)))
 
 def get_alert_count(watchlist_id: int, domain_id: int = None) -> int:
+    """
+    Return the number of alerts for a watchlist and domain.
+    
+    Args:
+        watchlist_id (int): Watchlist ID.
+        domain_id (int): Domain ID.
+
+    Returns:
+        int: Number of alerts.
+    """
     if domain_id:
         return get_count_by_domain_and_watchlist(domain_id, watchlist_id)
     else:
         return get_count_by_watchlist(watchlist_id)
+
+def get_new_alert_count() -> int:
+    """
+    Return the number of new alerts for the current user.
+
+    Returns:
+        int: Number of new alerts.
+    """
+    from app.repository.watchlist import _select_watchlist_ids_for_user
+    watchlist_ids = _select_watchlist_ids_for_user(current_user)
+    return db.session.scalar(db.select(db.func.count(Alert.id)).filter(and_(Alert.watchlist_id.in_(watchlist_ids), Alert.is_new == True)))
 
 # Following code (function) was created by Cursor IDE.
 # AI model: Claude 3.7 Sonnet
