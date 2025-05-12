@@ -7,8 +7,53 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Alerts</h1>
-    <p>List of all alerts regarding your domains and watchlists.</p>
+<h1>Alerts</h1>
+<p>List of all alerts regarding your domains and watchlists.</p>
 
+{# Following code (filter form) was created by Cursor IDE.
+AI model: Claude 3.7 Sonnet
+Prompt: Update the alert list template to include a filter form with fields for status, date range, domain name, and
+watchlist name #}
+<form action="" method="POST" class="filter-form">
+    {{ filter_form.hidden_tag() }}
+    <div class="form-group">
+        {{ filter_form.status.label }}
+        {{ filter_form.status }}
+    </div>
+    <div class="form-group">
+        {{ filter_form.domain_name.label }}
+        {{ filter_form.domain_name }}
+    </div>
+    <div class="form-group">
+        {{ filter_form.watchlist_name.label }}
+        {{ filter_form.watchlist_name }}
+    </div>
+    <div class="form-group">
+        {{ filter_form.date_from.label }}
+        {{ filter_form.date_from() }}
+        {% for error in filter_form.date_from.errors %}
+        <span class="form-error">Invalid date/time. Please use the picker or enter in the format
+            YYYY-MM-DDTHH:MM.</span>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        {{ filter_form.date_to.label }}
+        {{ filter_form.date_to() }}
+        {% for error in filter_form.date_to.errors %}
+        <span class="form-error">Invalid date/time. Please use the picker or enter in the format
+            YYYY-MM-DDTHH:MM.</span>
+        {% endfor %}
+    </div>
+    <div class="button-group">
+        {{ filter_form.submit(class="button") }}
+        {{ filter_form.reset(class="button") }}
+    </div>
+</form>
+
+{% if pagination.items %}
     {% include "alert/partial_alert_table.html" %}
+    {{ macros.render_pagination(pagination, 'alert.list_alerts', **filter_values) }}
+{% else %}
+    <p><i>Good news! You do not have any alerts. ...Have you set up the watchlists properly?</i></p>
+{% endif %}
 {% endblock %}

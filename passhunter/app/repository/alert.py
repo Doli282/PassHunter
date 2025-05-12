@@ -5,7 +5,7 @@ from flask_sqlalchemy.pagination import Pagination
 from sqlalchemy import and_
 
 from app import db
-from models import Alert, Watchlist
+from models import Alert, Watchlist, Domain
 
 
 def get_count_by_watchlist(watchlist_id: int) -> int:
@@ -39,22 +39,78 @@ def get_alert_count(watchlist_id: int, domain_id: int = None) -> int:
     else:
         return get_count_by_watchlist(watchlist_id)
 
-def get_page_all(page: int = 1) -> Pagination:
+# Following code (function) was created by Cursor IDE.
+# AI model: Claude 3.7 Sonnet
+# Prompt: Update the alert list template to include a filter form with fields for status, date range, domain name, and
+# watchlist name
+def _apply_filters(query, filters):
     """
-    Retrieve paginated all Alerts for the current user.
+    Apply filters to the alert query.
+    Args:
+        query: The base query to apply filters to
+        filters: Dictionary containing filter values
+    Returns:
+        The modified query with filters applied
+    """
+    if filters.get('status') and filters['status'] != 'all':
+        is_new = filters['status'] == 'new'
+        query = query.filter(Alert.is_new == is_new)
+        
+    if filters.get('domain_name'):
+        query = query.join(Domain).filter(
+            Domain.name.ilike(f"%{filters['domain_name']}%")
+        )
+    elif filters.get('domain_id'):
+        query = query.filter(Alert.domain_id == filters['domain_id'])
+        
+    if filters.get('watchlist_name'):
+        query = query.join(Watchlist).filter(
+            Watchlist.name.ilike(f"%{filters['watchlist_name']}%")
+        )
+    elif filters.get('watchlist_id'):
+        query = query.filter(Alert.watchlist_id == filters['watchlist_id'])
+        
+    if filters.get('date_from'):
+        query = query.filter(Alert.created_at >= filters['date_from'])
+        
+    if filters.get('date_to'):
+        query = query.filter(Alert.created_at <= filters['date_to'])
+        
+    return query
 
+# Following code (function) was created by Cursor IDE.
+# AI model: Claude 3.7 Sonnet
+# Prompt: Update the alert list template to include a filter form with fields for status, date range, domain name, and
+# watchlist name
+def get_page_all(page: int = 1, filters: dict = None) -> Pagination:
+    """
+    Retrieve paginated all Alerts for the current user with optional filters.
     Args:
         page (int): Page number.
-
+        filters (dict): Dictionary containing filter values
     Returns:
         Pagination: Paginated Alerts.
     """
     from app.repository.watchlist import _select_watchlists_for_user
-    # Get all watchlists for the current user
     watchlists = _select_watchlists_for_user(current_user).subquery()
-    # Get all alerts
-    query_alerts = db.select(Alert).join(watchlists, Alert.watchlist_id == watchlists.c.id).order_by(Alert.is_new.desc(), Alert.created_at.desc())
-    return db.paginate(select=query_alerts, page=page,max_per_page=current_app.config['PER_PAGE'])
+    query_alerts = db.select(Alert).join(watchlists, Alert.watchlist_id == watchlists.c.id)
+    
+    # Apply filters if provided
+    if filters:
+        query_alerts = _apply_filters(query_alerts, filters)
+        
+    query_alerts = query_alerts.order_by(Alert.is_new.desc(), Alert.created_at.desc())
+    
+    # Get total count to validate page number
+    total = db.session.scalar(db.select(db.func.count()).select_from(query_alerts.subquery()))
+    per_page = current_app.config['PER_PAGE']
+    max_page = (total + per_page - 1) // per_page if total > 0 else 1
+    
+    # If page is invalid, default to page 1
+    if page < 1 or page > max_page:
+        page = 1
+        
+    return db.paginate(select=query_alerts, page=page, max_per_page=per_page)
 
 def get_alert_by_id(alert_id: int) -> Alert:
     """
