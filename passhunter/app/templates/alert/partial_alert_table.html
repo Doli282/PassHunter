@@ -1,0 +1,34 @@
+{% import "macros.html" as macros %}
+
+{% if pagination.items %}
+    {# Table of individual alerts #}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Domain</th>
+                <th>Watchlist</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alert in pagination.items %}
+                <tr>
+                    <td>{{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}<noscript>{{ alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript></td>
+                    <td><a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a></td>
+                    <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{ alert.watchlist.name }}</a></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}">
+                            {{ empty_form.hidden_tag() }}
+                            {{ empty_form.submit(value=alert.print_status()) }}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {# Pagination #}
+    {{ macros.render_pagination(pagination, 'alert.list_alerts') }}
+{% else %}
+    <p><i>Good news! You do not have any alerts. ...Have you set up the watchlists properly?</i></p>
+{% endif %}
