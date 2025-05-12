@@ -213,7 +213,6 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
                 send_email(watchlist.email, domain.name, watchlist.name, created_at.strftime("%Y-%m-%d %H:%M UTC"))
             except Exception as e:
                 logging.error(f"Error sending email alert to {watchlist.email}: {e}")
-            # TODO send alert into Slack (or something like that)
 
 def check_hash_in_db(file: str) -> tuple[bool, bytes | None]:
     """
