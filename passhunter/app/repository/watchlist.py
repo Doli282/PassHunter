@@ -20,6 +20,17 @@ def _select_watchlists_for_user(user: Account) -> Select:
     """
     return db.select(Watchlist).filter(Watchlist.account_id == user.id)
 
+def _select_watchlist_ids_for_user(user: Account) -> Select:
+    """
+    Select Watchlist IDs for a user.
+
+    Args:
+        user (Account): Owner of the Watchlists.
+    Returns:
+        Select: SQLAlchemy select statement.
+    """
+    return db.select(Watchlist.id).filter(Watchlist.account_id == user.id)
+
 
 def get_page(page: int = 1) -> Pagination:
     """
