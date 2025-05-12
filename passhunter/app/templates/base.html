@@ -5,65 +5,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PassHunter{% endblock %}</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-<div class="page-wrapper">
-    {# Header #}
-    <header>
-        {# Navigation bar #}
-        <nav class="navbar">
-            <div class="navbar-brand">
-                <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
-            </div>
-            <ul class="navbar-menu">
-                <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
-                {% if current_user.is_anonymous %}
+    <div class="page-wrapper">
+        {# Header #}
+        <header>
+            {# Navigation bar #}
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <a href="{{ url_for('index.index') }}" class="logo">PassHunter</a>
+                </div>
+                <ul class="navbar-menu">
+                    <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
+                    {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
-                {% else %}
+                    {% else %}
                     <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
                     <li><a href="{{ url_for('domain.list_domains') }}" class="nav-item">Domains</a></li>
                     <li><a href="{{ url_for('alert.list_alerts') }}" class="nav-item">Alerts</a></li>
-                    <li><a href="{{ url_for('profile.profile') }}"
-                           class="nav-item">Profile</a></li>
+                    <li><a href="{{ url_for('profile.profile') }}" class="nav-item">Profile</a></li>
                     <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
-    {# Flashed messages #}
-    <div>
-        {# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms #}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
+                    {% endif %}
                 </ul>
+            </nav>
+        </header>
+
+        {# Flash Messages #}
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
             {% endif %}
-        {% endwith %}
+            {% endwith %}
+        </div>
+
+        {# Main content block #}
+        <main class="container">
+            {% block content %}{% endblock %}
+        </main>
+
+        {# Footer #}
+        <footer class="footer">
+            <div class="footer-content">
+                <small>MIT license. Open source. No warranty. Use at own risk.</small>
+                <address>
+                    Contact administrator: <a href="mailto:yourname@localhost">yourname@localhost</a>
+                </address>
+            </div>
+        </footer>
     </div>
 
-    {# Main content block #}
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-
-    {# Footer #}
-    <footer class="footer">
-        <div class="footer-content">
-            <small>MIT license. Open source. No warranty. Use at own risk.</small>
-            <address>
-                Contact administrator: <a href="mailto:yourname@localhost">yourname@localhost</a>
-            </address>
-        </div>
-    </footer>
-</div>
-{{ moment.include_moment() }}
+    {# JavaScript #}
+    {{ moment.include_moment() }}
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>
