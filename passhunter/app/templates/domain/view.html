@@ -7,7 +7,6 @@
 
 {% block content %}
     <h1>Domain {{ domain.name }}</h1>
-    {# TODO ALERTS - list, number, links, ... #}
     <h2>This domain is monitored in the following watchlists:</h2>
     {% if domain.watchlists %}
         {# List with watchlist monitoring this domain #}
@@ -19,4 +18,8 @@
     {% else %}
         <p><i>The domain is not monitored in any view.</i></p>
     {% endif %}
+
+    {# List alerts for the domain #}
+    <h2>There are the following alerts related to the domain:</h2>
+    {% include "alert/partial_alert_table.html" %}
 {% endblock %}

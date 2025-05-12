@@ -1,4 +1,5 @@
 """Views for the alert page of the PassHunter web application."""
+from dns.name import empty
 from flask import request, render_template, redirect, url_for, flash, Response
 
 import app.repository.alert as alert_repository
@@ -15,7 +16,7 @@ def list_alerts() -> str:
     """
     page = request.args.get('page', 1, type=int)
     pagination = alert_repository.get_page_all(page)
-    return render_template('alert/list.html', pagination=pagination, form=EmptyForm())
+    return render_template('alert/list.html', pagination=pagination, empty_form=EmptyForm())
 
 @bp.route('/alerts/<int:alert_id>/register', methods=['POST'])
 def change_alert_state(alert_id: int) -> Response:
