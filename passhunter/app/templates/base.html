@@ -30,7 +30,15 @@
                     {% else %}
                     <li><a href="{{ url_for('watchlist.list_watchlists') }}" class="nav-item">Watchlists</a></li>
                     <li><a href="{{ url_for('domain.list_domains') }}" class="nav-item">Domains</a></li>
-                    <li><a href="{{ url_for('alert.list_alerts') }}" class="nav-item">Alerts</a></li>
+                    <li>
+                        <a href="{{ url_for('alert.list_alerts') }}" class="nav-item">
+                            Alerts
+                            {% set new_alert_count = get_new_alert_count() %}
+                            {% if new_alert_count > 0 %}
+                            <span class="badge">{{ new_alert_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
                     <li><a href="{{ url_for('profile.profile') }}" class="nav-item">Profile</a></li>
                     <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
                     {% endif %}
