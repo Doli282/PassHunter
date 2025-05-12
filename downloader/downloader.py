@@ -89,6 +89,14 @@ async def worker(name: str) -> None:
             logging.error(f"Worker '{name}' reached error while downloading '{filename}'. Error: {e}")
 
 
+# Start() function is based on the start() function implemented in a Downloader daemon made by alfem.
+# author: Alfonso E.M. [alfem] (https://github.com/alfem)
+# title: telegram-download-daemon
+# medium: online
+# version: commit 774025f
+# year: 2023
+# url: https://github.com/alfem/telegram-download-daemon/tree/master
+# date: 2025-04-28
 async def start() -> None:
     """
     Starting function for the Telegram client.
