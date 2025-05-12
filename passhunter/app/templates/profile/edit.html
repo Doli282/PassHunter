@@ -4,6 +4,7 @@
 
 {% block content %}
 <h1>Edit Profile</h1>
+<div class="form-container">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <p>
@@ -14,8 +15,9 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.submit }}
+            {{ form.submit(class="btn btn-primary") }}
         </p>
     </form>
-    <a href="{{ url_for('profile.profile') }}">Cancel</a>
+</div>
+<a href="{{ url_for('profile.profile') }}">Cancel</a>
 {% endblock %}
