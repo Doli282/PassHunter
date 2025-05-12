@@ -5,9 +5,13 @@
 {% block content %}
     <h1>Remove Domain {{ domain.name }} from {{ watchlist.name }}</h1>
     <p>Are you sure you want to remove this domain from the watchlist?</p>
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        {{ form.submit() }}
-    </form>
-    <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">Cancel</a>
+    <p>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            {{ form.submit(class="btn btn-danger") }}
+        </form>
+    </p>
+    <p>
+        <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">Cancel</a>
+    </p>
 {% endblock %}

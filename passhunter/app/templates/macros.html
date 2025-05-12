@@ -9,30 +9,34 @@ URL: https://flask-sqlalchemy.readthedocs.io/en/stable/pagination/
 Accessed: 2025-04-22
 #}
 {% macro render_pagination(pagination, endpoint) %}
-  <div class="page-items">
+<div class="pagination-container">
+  <div class="pagination-info text-light">
     {{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }}
   </div>
-  <div class=pagination>
+  <div class="pagination">
     {% if pagination.has_prev %}
-        <a href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}">&laquo; Previous</a>
+    <a href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}" class="btn btn-sm">Previous</a>
     {% else %}
-        <span class="disabled">&laquo; Previous</span>
+    <span class="btn btn-sm" disabled>Previous</span>
     {% endif %}
+
     {% for page in pagination.iter_pages() %}
-      {% if page %}
-        {% if page != pagination.page %}
-          <a href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }}</a>
-        {% else %}
-          <strong>{{ page }}</strong>
-        {% endif %}
-      {% else %}
-        <span class=ellipsis>…</span>
-      {% endif %}
-    {% endfor %}
-    {% if pagination.has_next %}
-        <a href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}">Next &raquo;</a>
+    {% if page %}
+    {% if page != pagination.page %}
+    <a href="{{ url_for(endpoint, page=page, **kwargs) }}" class="btn btn-sm">{{ page }}</a>
     {% else %}
-        <span class="disabled">Next &raquo;</span>
+    <span class="btn btn-sm btn-primary">{{ page }}</span>
+    {% endif %}
+    {% else %}
+    <span class="pagination-ellipsis">…</span>
+    {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <a href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}" class="btn btn-sm">Next</a>
+    {% else %}
+    <span class="btn btn-sm" disabled>Next</span>
     {% endif %}
   </div>
+</div>
 {% endmacro %}

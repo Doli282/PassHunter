@@ -9,7 +9,8 @@
 {% block content %}
     <h1>Watchlists</h1>
     <p>Here you can manage your watchlists.</p>
-    <a href="{{ url_for('watchlist.create_watchlist') }}">Create New Watchlist</a>
+    <p><a href="{{ url_for('watchlist.create_watchlist') }}" class="btn btn-primary">Create New Watchlist</a></p>
+        
     {% if pagination.items %}
         {# Table with individual watchlists #}
         <table>

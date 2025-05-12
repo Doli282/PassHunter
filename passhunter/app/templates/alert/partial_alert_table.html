@@ -1,40 +1,36 @@
 {% import "macros.html" as macros %}
 
 {# Table of individual alerts #}
-<table>
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Domain</th>
-            <th>Watchlist</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for alert in pagination.items %}
-        <tr>
-            <td>{{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}<noscript>{{
-                    alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript></td>
-            <td><a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
-            </td>
-            <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{
-                    alert.watchlist.name }}</a></td>
-            <td>
-                <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}">
-                    {{ empty_form.hidden_tag() }}
-                    {% if filter_values %}
-                        {# Following code (for loop) was created by Cursor IDE.
-                        AI model: Claude 3.7 Sonnet
-                        Prompt: Update the alert list template to include a filter form with fields for status, date range, domain name, and
-                        watchlist name #}
-                        {% for key, value in filter_values.items() %}
-                            <input type="hidden" name="{{ key }}" value="{{ value|e }}">
-                        {% endfor %}
-                    {% endif %}
-                    {{ empty_form.submit(value=alert.print_status()) }}
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<ul class="alert-list">
+    {% for alert in pagination.items %}
+    <li class="alert-item {% if alert.is_new %}new{% else %}registered{% endif %}">
+        <div class="alert-header">
+            <h3 class="alert-title">
+                <a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
+                in
+                <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{
+                    alert.watchlist.name }}</a>
+            </h3>
+            <span class="alert-status {% if alert.is_new %}new{% else %}registered{% endif %}">
+                {% if alert.is_new %}New{% else %}Registered{% endif %}
+            </span>
+        </div>
+        <div class="alert-content">
+            {{ alert.description }}
+        </div>
+        <div class="alert-footer">
+            <span class="alert-meta">{{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}</span>
+            <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}"
+                class="alert-actions">
+                {{ empty_form.hidden_tag() }}
+                {% if filter_values %}
+                {% for key, value in filter_values.items() %}
+                <input type="hidden" name="{{ key }}" value="{{ value|e }}">
+                {% endfor %}
+                {% endif %}
+                {{ empty_form.submit(value=alert.print_status(), class="btn btn-sm") }}
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
