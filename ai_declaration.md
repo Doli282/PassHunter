@@ -18,4 +18,14 @@
 - version: 2025.1.1
 - year: 2025
 - url: https://www.jetbrains.com/junie/
-- date: 2025-05-12
+- date: 2025-05-16
+
+## ChatGPT
+
+- author: OpenAI
+- title ChatGPT
+- medium: software
+- version: GPT-4.0
+- year: 2025
+- url: https://chatgpt.com
+- date: 2025-05-16
