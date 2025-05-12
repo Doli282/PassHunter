@@ -2,7 +2,6 @@
 
 This daemon forwards messages that contain documents to the specified channel.
 
-
 ## Installation
 
 Make a virtual environment and install requirements from `requirements.txt`.
@@ -20,6 +19,17 @@ Register the Telegram application and obtain API ID on https://docs.telethon.dev
 3. Create a new application. Fill in the details.
 4. Get API TOKEN and API HASH
 
+#### Authentication
+
+During the first lunch an authentication is required when a BOT TOKEN was not provided.
+Later a `XX.session` file is created and used for repeated login.
+Authentication with a phone number and a code must be manual.
+The authentication code is sent during verification to another device (to a phone or another client).
+
+#### BOT vs. Phone
+
+When using a BOT TOKEN it can forward messages only from channels where the bot is a member.
+When using a phone number, it can forward from any channels defined in the list.
 
 ## Configuration
 
