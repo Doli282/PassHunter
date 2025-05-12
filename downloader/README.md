@@ -21,6 +21,10 @@ Register the Telegram application and obtain API ID on https://docs.telethon.dev
 
 Register a new bot by Telegram [@BotFather](https://t.me/botfather) and get the BOT TOKEN.
 
+The telegram service may want an authentication during the first launch when a BOT TOKEN was not provided.
+Then a `XXX.session` is created and used. 
+However, a better results were observed with the use of a BOT TOKEN.
+
 ## Configuration
 
 Daemon is configured through environment variables in `.env` file and configurable variables in `config.py`.
@@ -31,8 +35,10 @@ The `.env` file contains secrets for accessing Telegram API:
 TELEGRAM_API_ID=...
 TELEGRAM_API_HASH=...
 BOT_TOKEN=...
-```
 
+# RabbitMQ
+CELERY_BROKER_URL=...
+```
 
 ## Usage
 
@@ -40,3 +46,7 @@ Run:
 ```shell
 python3 downloader.py
 ```
+
+## Tests
+
+Tests scenarios are described in the /tests/ directory.
