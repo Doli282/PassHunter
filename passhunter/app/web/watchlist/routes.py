@@ -61,9 +61,9 @@ def create_watchlist() -> str | Response:
     """
     form = WatchlistForm()
     if form.validate_on_submit():
-        watchlist_repository.create(form, current_user)
+        watchlist = watchlist_repository.create(form, current_user)
         flash(f'Watchlist "{form.name.data}" created successfully.', 'success')
-        return redirect(url_for('watchlist.list_watchlists'))
+        return redirect(url_for('watchlist.view_watchlist', watchlist_id=watchlist.id))
     return render_template('watchlist/upsert.html', form=form)
 
 
