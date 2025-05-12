@@ -262,6 +262,10 @@ prompt: Create utilities.css with utility classes for common styling needs
 }
 
 /* Visibility */
+.hidden {
+    display: none !important;
+}
+
 .visible {
     visibility: visible !important;
 }
