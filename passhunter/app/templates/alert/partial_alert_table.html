@@ -5,32 +5,36 @@
     {% for alert in pagination.items %}
     <li class="alert-item {% if alert.is_new %}new{% else %}registered{% endif %}">
         <div class="alert-header">
-            <h3 class="alert-title">
-                <a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
-                in
-                <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{
-                    alert.watchlist.name }}</a>
+            <h3>
+                {{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}<noscript>{{
+                    alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript>
             </h3>
             <span class="alert-status {% if alert.is_new %}new{% else %}registered{% endif %}">
                 {% if alert.is_new %}New{% else %}Registered{% endif %}
             </span>
-        </div>
-        <div class="alert-content">
-            {{ alert.description }}
-        </div>
-        <div class="alert-footer">
-            <span class="alert-meta">{{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}</span>
             <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}"
-                class="alert-actions">
-                {{ empty_form.hidden_tag() }}
-                {% if filter_values %}
-                {% for key, value in filter_values.items() %}
-                <input type="hidden" name="{{ key }}" value="{{ value|e }}">
-                {% endfor %}
-                {% endif %}
-                {{ empty_form.submit(value=alert.print_status(), class="btn btn-sm") }}
-            </form>
+            class="alert-actions">
+            {{ empty_form.hidden_tag() }}
+            {% if filter_values %}
+            {% for key, value in filter_values.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value|e }}">
+            {% endfor %}
+            {% endif %}
+            {{ empty_form.submit(value=('Register' if alert.is_new else 'Unregister'), class="btn btn-sm") }}
+        </form>
         </div>
+        <div class="alert-body">
+            <p>
+                Domain 
+                <em><a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
+                </em>
+                defined in watchlist
+                <em><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{alert.watchlist.name
+                    }}</a></em>
+                found.
+            </p>
+        </div>
+
     </li>
     {% endfor %}
 </ul>
