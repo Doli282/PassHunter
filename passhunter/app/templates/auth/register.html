@@ -28,8 +28,8 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.password_confirm.label }}
-            {{ form.password_confirm }}
+            {{ form.password_confirm.label(title="Confirm the strong password once more.") }}
+            {{ form.password_confirm(title="Confirm the strong password once more.", placeholder="*****") }}
             {% for error in form.password_confirm.errors %}
                 <span>{{ error }}</span>
             {% endfor %}
