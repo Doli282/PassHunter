@@ -45,7 +45,10 @@
         Alert content - possible matches
     </h2>
     {% if alert.content %}
-    <ul>
+    <p>
+    The following matches were found in the alert. It is a list of files and the matches in them.
+    </p>
+        <ul>
         {% for file, matches in alert.content.items() %}
             <li>{{ file }}<ul>
             {% for match in matches %}
