@@ -7,6 +7,7 @@ import os
 import shutil
 import smtplib
 from email.message import EmailMessage
+from http.client import responses
 
 from celery import Celery
 from opensearchpy import helpers
@@ -152,16 +153,16 @@ def search_batch(uploaded_at: datetime.datetime) -> None:
         # Search for each domain in the batch.
         for domain in session.scalars(statement).all():
             try:
-                hit_count = search_for_domain(domain, uploaded_at)
+                hit_count, highlights = search_for_domain(domain, uploaded_at)
                 logging.debug(f"Domain found {hit_count} times.")
                 # When the domain is found, create alerts for each watchlist associated with the domain.
                 if hit_count > 0:
-                    make_alerts(domain, uploaded_at, session)
+                    make_alerts(domain, uploaded_at, highlights, session)
             except Exception as e:
                 logging.error(f"Error searching for domain '{domain.name}': {e}")
                 continue
 
-def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime) -> int:
+def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime = None) -> tuple[int, dict[list[str]]]:
     """
     Search for a domain in OpenSearch.
     Searches for the domain name only in the uploaded batch.
@@ -171,15 +172,21 @@ def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime) -> int:
         uploaded_at (datetime): The timestamp of the upload.
 
     Returns:
-        Hit count.
+        Tuple of hit count and list of lists for highlighted matches.
     """
     logging.debug(f"Searching for domain: '{domain.name}'")
     # Search for the domain with OpenSearch.
-    response = opensearch.search_term(domain.name, uploaded_at.isoformat())
+    response = opensearch.search_term(domain.name, uploaded_at.isoformat() if isinstance(uploaded_at, datetime.datetime) else uploaded_at)
+    logging.debug(f"Search response: {response}")
     # Check if the domain was found.
-    return response.get("hits", {}).get("total", {}).get("value", 0)
+    # Save all matches
+    hits = response.get("hits", {}).get("hits", [])
+    matches = {}
+    for hit in hits:
+        matches[hit.get("_source", {}).get("filename", "unknown")] = hit.get("highlight", {}).get("attachment_parts", [])
+    return response.get("hits", {}).get("total", {}).get("value", 0), matches
 
-def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Session) -> None:
+def make_alerts(domain: 'Domain', created_at: datetime.datetime, content: dict[list[str]], session: Session) -> None:
     """
     Make alerts for the domain.
     Iterate over watchlists and raise alerts.
@@ -187,6 +194,7 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
     Args:
         domain (Domain): The domain for which alerts should be created.
         created_at (datetime): The creation time of the alert.
+        content (dict[list[str]]): The dict of highlighted matches.
         session (Session): The database session.
 
     Returns:
@@ -201,7 +209,7 @@ def make_alerts(domain: 'Domain', created_at: datetime.datetime, session: Sessio
             continue
         # Create an alert for the watchlist.
         try:
-            alert = Alert(is_new=True, created_at=created_at, domain=domain, watchlist=watchlist)
+            alert = Alert(is_new=True, created_at=created_at, content=content, domain=domain, watchlist=watchlist)
             session.add(alert)
             session.commit()
             logging.info(f"Alert created for domain '{domain.name}' and watchlist '{watchlist.name}'")

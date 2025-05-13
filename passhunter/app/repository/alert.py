@@ -166,3 +166,17 @@ def change_alert_state(alert_id: int) -> Alert:
     alert.is_new = not alert.is_new
     db.session.commit()
     return alert
+
+def delete_alert(alert: Alert) -> Alert:
+    """
+    Remove alert from the database.
+
+    Args:
+        alert (Alert): Alert to delete.
+
+    Returns:
+        Alert: deleted alert.
+    """
+    db.session.delete(alert)
+    db.session.commit()
+    return alert

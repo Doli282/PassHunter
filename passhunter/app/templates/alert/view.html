@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+
+{% block title %}Alert details - PassHunter{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+    <h1>Alert details</h1>
+    <div class="definition-list-group">
+        <dl>
+            <dt>
+                Status:
+            </dt>
+            <dd>
+                <span class="alert-status {% if alert.is_new %}new{% else %}registered{% endif %}">
+                    {% if alert.is_new %}New{% else %}Registered{% endif %}
+                </span>
+
+            </dd>
+            <dt>Created at</dt>
+            <dd>
+                {{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}
+                <noscript>{{ alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript>
+            </dd>
+            <dt>Detected Domain</dt>
+            <dd>
+                <a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
+            </dd>
+            <dt>Monitored in watchlist</dt>
+            <dd>
+                <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{ alert.watchlist.name }}</a>
+            </dd>
+        </dl>
+        <div>
+            <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}" class="form-inline">
+                    {{ empty_form.hidden_tag() }}
+            {{ empty_form.submit(value=('Register' if alert.is_new else 'Unregister'), class="btn btn-primary") }}
+            </form>
+            <a href="{{ url_for('alert.delete_alert', alert_id=alert.id) }}" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+    <h2>
+        Alert content - possible matches
+    </h2>
+    {% if alert.content %}
+    <ul>
+        {% for file, matches in alert.content.items() %}
+            <li>{{ file }}<ul>
+            {% for match in matches %}
+                <li>{{ match }}</li>
+            {% endfor %}
+            </ul></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p><i>No additional content available.</i></p>
+    {% endif %}
+
+{% endblock %}
