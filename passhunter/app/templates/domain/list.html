@@ -8,7 +8,11 @@
 
 {% block content %}
     <h1>Domains</h1>
-    <p>List of all domains in your watchlists.</p>
+    <p>
+        List of all domains in your watchlists.
+        There are all strings you monitor.
+        The numbers show in how many watchlists is the string included and how many alerts are related to the string.
+    </p>
     {% if pagination.items %}
         {# Table with individual domains #}
         <table>
