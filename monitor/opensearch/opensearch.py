@@ -211,6 +211,12 @@ class Client(OpenSearch):
                 }
             },
             "highlight": {
+                "pre_tags": [
+                    ""
+                ],
+                "post_tags": [
+                    ""
+                ],
                 "fields": {
                     "attachment_parts": {}
                 }
