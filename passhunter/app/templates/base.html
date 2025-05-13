@@ -25,6 +25,7 @@
                 </div>
                 <ul class="navbar-menu">
                     <li><a href="{{ url_for('index.index') }}" class="nav-item">Home</a></li>
+                    <li><a href="{{ url_for('search.search') }}" class="nav-item">Search</a></li>
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
                     {% else %}
