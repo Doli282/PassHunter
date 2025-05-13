@@ -9,9 +9,7 @@
                 {{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}
                 <noscript>{{ alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript>
             </h3>
-            <span class="alert-status {% if alert.is_new %}new{% else %}registered{% endif %}">
-                {% if alert.is_new %}New{% else %}Registered{% endif %}
-            </span>
+            {{ macros.render_alert_status(alert.is_new) }}
             <form method="POST" action="{{ url_for('alert.change_alert_state', alert_id=alert.id) }}"
             class="alert-actions">
             {{ empty_form.hidden_tag() }}

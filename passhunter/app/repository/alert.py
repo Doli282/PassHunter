@@ -167,6 +167,24 @@ def change_alert_state(alert_id: int) -> Alert:
     db.session.commit()
     return alert
 
+def has_new_alerts_per_watchlist_domain(watchlist_id: int, domain_id: int) -> bool:
+    """
+    Check if there are new alerts for the watchlist and domain.
+
+    Args:
+        watchlist_id (int): Watchlist ID.
+        domain_id (int): Domain ID.
+
+    Returns:
+        True if there are new alerts for the watchlist and domain.
+    """
+    if db.session.scalar(db.select(Alert)
+        .filter(and_(Alert.is_new == True, Alert.domain_id == domain_id, Alert.watchlist_id == watchlist_id))):
+        return True
+    else:
+        return False
+
+
 def delete_alert(alert: Alert) -> Alert:
     """
     Remove alert from the database.
