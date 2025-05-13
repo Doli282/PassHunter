@@ -1,0 +1,8 @@
+Url:https://portal.gouda.com/login
+Username:john@gmail.com
+Password:john54321
+===============================================================
+Url:http://www.security.com/login/new
+Username:goerge@gmail.com
+Password:Password.my.strong
+===============================================================
