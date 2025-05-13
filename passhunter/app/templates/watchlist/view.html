@@ -36,8 +36,8 @@
     <form action="" method="POST" class="form-container">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.name.label }}
-            {{ form.name }}
+            {{ form.name.label(title="Add another string to the watchlist. Define the strings as wildcards. Special characters are '*' for any number of characters and '?' for one character.") }}
+            {{ form.name(title="Add another string to the watchlist. Define the strings as wildcards. Special characters are '*' for any number of characters and '?' for one character.", placeholder="*@mojedomena.cz") }}
             {% for error in form.name.errors %}
             <span class="form-error">{{ error }}</span>
             {% endfor %}
@@ -61,7 +61,7 @@
         <tr>
             <td><a href="{{ url_for('domain.view_domain', domain_id=domain.id) }}">{{ domain.name }}</a></td>
             <td>{{ alert_count(watchlist_id=watchlist.id, domain_id=domain.id) }}</td>
-            <td>##</td>
+            <td>{{ macros.render_alert_status(has_new_alerts_wl_d(watchlist_id=watchlist.id, domain_id=domain.id)) }}</td>
             <td><a href="{{ url_for('watchlist.remove_domain', watchlist_id=watchlist.id, domain_id=domain.id) }}"
                     class="btn btn-danger">Remove</a></td>
         </tr>
