@@ -220,6 +220,10 @@ prompt: Update alert styles, flash messages, error messages, and button styles
     margin-bottom: var(--spacing-4);
 }
 
+.form-inline {
+    display: inline-block;
+}
+
 .form-row {
     display: flex;
     gap: var(--spacing-4);
