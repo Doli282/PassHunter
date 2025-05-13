@@ -7,7 +7,7 @@ from opensearchpy import OpenSearch
 
 class Client(OpenSearch):
     """Custom client for OpenSearch with added shortcut functions."""
-    def __init__(self, pipeline_id: str = 'attachment_pipeline', index_id: str = 'infostealers'):
+    def __init__(self, pipeline_id: str = 'attachment_pipeline', index_id: str = 'infostealers_classic'):
         """
         Initialize the OpenSearch client.
 
@@ -27,8 +27,10 @@ class Client(OpenSearch):
         # Create the ingest pipeline
         self.pipeline_id = pipeline_id
         self._create_index_pipeline()
-        # Set the index
+        # Set and create the index
         self.index_id = index_id
+        if not self.indices.exists(index=self.index_id):
+            self._create_index()
 
     def upload_file(self, encoded_data: str, filename: str, uploaded_at: str) -> Any:
         """
@@ -86,6 +88,43 @@ class Client(OpenSearch):
         # Perform the actual search and return the response
         return self.search(index=index, body=search_body)
 
+    def _create_index(self) -> Any:
+        """
+        Create an index.
+        Define Tokenizer and Analyzer for the index.
+
+        Returns:
+            Response from OpenSearch.
+        """
+        index_body = {
+                "settings": {
+                    "analysis": {
+                        "analyzer": {
+                            "my_analyzer": {
+                                "type": "custom",
+                                "tokenizer": "classic"
+                            }
+                        }
+                    }
+                },
+                "mappings": {
+                    "properties": {
+                        "filename": {
+                            "type": "keyword"
+                        },
+                        "uploaded_at": {
+                            "type": "date"
+                        },
+                        "attachment_parts": {
+                            "type": "text",
+                            "analyzer": "my_analyzer",
+                            "search_analyzer": "my_analyzer"
+                        }
+                    }
+                }
+            }
+        return self.indices.create(index=self.index_id, body=index_body)
+
     def _create_index_pipeline(self) -> Any:
         """
         Create an index pipeline.
@@ -121,7 +160,7 @@ class Client(OpenSearch):
                     "remove": {
                         "field": "data"
                     }
-                },
+                }
             ]
         }
         return self.ingest.put_pipeline(id=self.pipeline_id, body=pipeline_body)
@@ -150,8 +189,7 @@ class Client(OpenSearch):
 
     def _prepare_search_body(self, search_term: str, uploaded_at: str = None) -> dict:
         """
-        Prepare the search body.
-        The body is used for searching in OpenSearch.
+        Prepare the search body for search using wildcard.
 
         Args:
             search_term (str): The search term.
@@ -166,7 +204,7 @@ class Client(OpenSearch):
             "query": {
                 "bool": {
                     "must": {
-                        "match": {
+                        "wildcard": {
                             "attachment_parts": search_term
                         }
                     }
