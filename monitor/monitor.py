@@ -7,7 +7,6 @@ import os
 import shutil
 import smtplib
 from email.message import EmailMessage
-from http.client import responses
 
 from celery import Celery
 from opensearchpy import helpers

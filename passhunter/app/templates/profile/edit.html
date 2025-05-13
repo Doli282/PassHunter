@@ -8,8 +8,8 @@
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.name.label }}
-            {{ form.name }}
+            {{ form.name.label(title="State your name.") }}
+            {{ form.name(title="State your name.", placeholder="Chuck P.") }}
             {% for error in form.name.errors %}
             <span>{{ error }}</span>
             {% endfor %}
