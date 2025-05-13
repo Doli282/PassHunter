@@ -32,8 +32,9 @@ def create_app():
     login.session_protection = 'strong'
 
     # Register functions into jinja templates
-    from app.repository.alert import get_alert_count, get_new_alert_count
-    app.jinja_env.globals.update(alert_count=get_alert_count, get_new_alert_count=get_new_alert_count)
+    from app.repository.alert import get_alert_count, get_new_alert_count, has_new_alerts_per_watchlist_domain
+    app.jinja_env.globals.update(alert_count=get_alert_count, get_new_alert_count=get_new_alert_count,
+                                 has_new_alerts_wl_d=has_new_alerts_per_watchlist_domain)
 
     # Register the blueprints
     from app.errors import bp as errors_bp

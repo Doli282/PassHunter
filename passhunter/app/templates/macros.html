@@ -1,6 +1,5 @@
 {#
 Following macro has been taken from the Flask-SQLAlchemy documentation
-
 Title: Paging Query Results
 Subtitle: Page Selection Widget
 Author: Pallets
@@ -39,4 +38,10 @@ Accessed: 2025-04-22
     {% endif %}
   </div>
 </div>
+{% endmacro %}
+
+{% macro render_alert_status(condition) %}
+<span class="alert-status {% if condition %}new{% else %}registered{% endif %}">
+                    {% if condition %}New{% else %}Registered{% endif %}
+                </span>
 {% endmacro %}
