@@ -6,8 +6,8 @@
     <li class="alert-item {% if alert.is_new %}new{% else %}registered{% endif %}">
         <div class="alert-header">
             <h3>
-                {{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}<noscript>{{
-                    alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript>
+                {{ moment(alert.created_at).format('YYYY-MM-DD HH:mm') }}
+                <noscript>{{ alert.created_at.strftime('%Y-%m-%d %H:%M') }} UTC</noscript>
             </h3>
             <span class="alert-status {% if alert.is_new %}new{% else %}registered{% endif %}">
                 {% if alert.is_new %}New{% else %}Registered{% endif %}
@@ -29,10 +29,14 @@
                 <em><a href="{{ url_for('domain.view_domain', domain_id=alert.domain_id) }}">{{ alert.domain.name }}</a>
                 </em>
                 defined in watchlist
-                <em><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{alert.watchlist.name
-                    }}</a></em>
+                <em>
+                    <a href="{{ url_for('watchlist.view_watchlist', watchlist_id=alert.watchlist_id) }}">{{ alert.watchlist.name }}</a>
+                </em>
                 found.
             </p>
+        </div>
+        <div class="alert-footer">
+            <a href="{{ url_for('alert.view_alert', alert_id=alert.id) }}">More details</a>
         </div>
 
     </li>

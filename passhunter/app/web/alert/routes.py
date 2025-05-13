@@ -116,4 +116,36 @@ def change_alert_state(alert_id: int) -> Response:
 
     return redirect(request.referrer or url_for('alert.list_alerts', **filters))
 
+@bp.route('/alerts/<int:alert_id>')
+@login_required
+def view_alert(alert_id: int) -> str:
+    """
+    Show the details of an alert.
+    List alert contents.
 
+    Args:
+        alert_id (int): The ID of the alert to view.
+    Returns:
+        str: The rendered template for the alert view page.
+    """
+    alert = alert_repository.get_alert_by_id(alert_id)
+    return render_template('alert/view.html', alert=alert, empty_form=EmptyForm())
+
+@bp.route('/alerts/<int:alert_id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_alert(alert_id: int) -> str|Response:
+    """
+    Delete alert.
+
+    Args:
+        alert_id (int): The ID of the alert to delete.
+    Returns:
+        The rendered template for the confirmation page or a redirect response.
+    """
+    alert = alert_repository.get_alert_by_id(alert_id)
+    form = EmptyForm()
+    if form.validate_on_submit():
+        alert_repository.delete_alert(alert)
+        flash(f"The alert has been deleted.")
+        return redirect(url_for('alert.list_alerts'))
+    return render_template('alert/delete.html', alert=alert, form=form)

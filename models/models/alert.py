@@ -19,6 +19,8 @@ class Alert(db.Model):
     created_at: db.Mapped[datetime] = db.mapped_column(db.DateTime, default=lambda: datetime.now(timezone.utc),
                                                        nullable=False, unique=False,
                                                        comment='Date and time the alert was created')
+    content: db.Mapped[list[list[str]]] = db.mapped_column(db.JSON, nullable=True, unique=False,
+                                               comment='Content of the alert')
     domain_id: db.Mapped[int] = db.mapped_column(db.Integer, db.ForeignKey('domain.id', ondelete='CASCADE'), index=True,
                                                  nullable=False, unique=False,
                                                  comment='Domain ID for which the alert was raised')
