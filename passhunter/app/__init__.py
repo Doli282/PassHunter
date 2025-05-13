@@ -54,6 +54,9 @@ def create_app():
     from app.web.profile import bp as profile_bp
     app.register_blueprint(profile_bp)
 
+    from app.web.search import bp as search_bp
+    app.register_blueprint(search_bp)
+
     from app.web.domain import bp as domain_bp
     app.register_blueprint(domain_bp)
 

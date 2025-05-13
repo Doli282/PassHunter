@@ -1,0 +1,42 @@
+{%  extends "base.html" %}
+
+{% block title %}Search - PassHunter{% endblock %}
+
+{% block content %}
+    {# Header and legend #}
+    <h1>Search</h1>
+    <p>
+    Search the database on your own for immediate results.
+    If you wish to check a domain, a password, or any other string, use the search bar.
+    </p>
+
+    <h3>How to use:</h3>
+    <p>
+    The search uses the wildcard syntax. Every character is treated as is.
+    The only special characters are: <em>*</em> for zero or more characters, <em>?</em> for one character.
+    If you want to search for a string that contains a wildcard character, you need to escape it with a backslash.
+    </p>
+
+    {# Search bar #}
+    <form action="" method="GET" class="form-container">
+        <p class="form-group">
+            <label for="q">Search:</label>
+            <input type="search" id="q" name="q" placeholder="*domain.xyz" value="{{ query }}">
+        </p>
+        <input type="submit" value="Search" class="btn btn-primary">
+    </form>
+
+    {# Print results of the search #}
+    {% if count != -1 %}
+        <h3>Found <em>{{ count }}</em> matches!</h3>
+    <ul>
+        {% for file, matches in results.items() %}
+            <li>{{ file }}<ul>
+            {% for match in matches %}
+                <li>{{ match }}</li>
+            {% endfor %}
+            </ul></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endblock %}
