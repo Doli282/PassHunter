@@ -1,4 +1,4 @@
-# 01_Forward
+# TC_01_Forward
 
 Forward new messages to the specified channel.
 
