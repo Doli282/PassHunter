@@ -1,4 +1,4 @@
-# 01_SEC_unauthorized_access
+# SEC_01_Unauthorized_access
 
 Accessing resources of other users has to be forbidden.
 Only authorized access (by the owner of the resource) must be permitted.
