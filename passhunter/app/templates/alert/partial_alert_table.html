@@ -15,7 +15,7 @@
             {{ empty_form.hidden_tag() }}
             {% if filter_values %}
             {% for key, value in filter_values.items() %}
-            <input type="hidden" name="{{ key }}" value="{{ value|e }}">
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
             {% endfor %}
             {% endif %}
             {{ empty_form.submit(value=('Register' if alert.is_new else 'Unregister'), class="btn btn-sm") }}

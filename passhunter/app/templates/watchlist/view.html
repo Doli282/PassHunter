@@ -12,11 +12,11 @@
 <div class="definition-list-group">
     <dl>
         <dt>Description</dt>
-        <dd>{{ watchlist.description }}</dd>
+        <dd>{{ watchlist.description|default("<i>Not defined</i>", true)|safe }}</dd>
         <dt>Status</dt>
         <dd>{{ watchlist.print_active() }}</dd>
         <dt>Notification email address</dt>
-        <dd>{{ watchlist.email|default('<i>Not defined</i>') }}</dd>
+        <dd>{{ watchlist.email|default('<i>Not defined</i>', true)|safe }}</dd>
         <dt>Email alerts</dt>
         <dd>{{ watchlist.print_send_alerts() }}</dd>
     </dl>
