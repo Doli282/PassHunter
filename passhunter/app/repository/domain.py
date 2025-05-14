@@ -31,7 +31,10 @@ def get_by_id(domain_id: int) -> Domain:
     query = domain.join(watchlist_domain_association, Domain.id == watchlist_domain_association.c.domain_id). \
     join(watchlists, watchlist_domain_association.c.watchlist_id == watchlists.c.id)
     # Return the domain if it exists and the user owns it, otherwise raise 404 error
-    return db.one_or_404(query)
+    from passhunter import app
+    app.logger.debug(f"DOMAIN ID: {domain_id}")
+    app.logger.debug(f"Query: {query}")
+    return db.first_or_404(query)
 
 
 def get_by_name(name: str) -> Domain|None:
@@ -60,8 +63,8 @@ def get_page_all(page: int = 1) -> Pagination:
     #watchlist_ids = db.select(Watchlist.id).filter(Watchlist.account_id == current_user.id)
     watchlists = _select_watchlists_for_user(current_user).subquery()
     # Get all domains in the watchlists
-    query_domains = db.select(Domain).join(watchlist_domain_association, Domain.id == watchlist_domain_association.c.domain_id). \
-    join(watchlists, watchlist_domain_association.c.watchlist_id == watchlists.c.id)
+    query_domains = db.select(Domain).distinct().join(watchlist_domain_association, Domain.id == watchlist_domain_association.c.domain_id). \
+    join(watchlists, watchlist_domain_association.c.watchlist_id == watchlists.c.id).order_by(Domain.id)
     # Return the paginated list of all domains
     return db.paginate(select=query_domains, page=page, max_per_page=current_app.config['PER_PAGE'])
 
