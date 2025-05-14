@@ -8,7 +8,8 @@ cli = FlaskGroup(create_app())
 
 @cli.command("create_db")
 def create_db():
-    db.drop_all()
+    # Uncomment to reset the database
+    #db.drop_all()
     db.create_all()
     db.session.commit()
     print("Database created")
