@@ -70,7 +70,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - SETUID # Needed to change the user - beacuse of gosu - beacuse of volumes
+      - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
 
   extractor:
@@ -87,7 +87,9 @@ services:
     volumes:
       - download_volume:/data/downloads
       - upload_volume:/data/uploads
-    mem_limit: "2g"
+    mem_limit: "2G"
+#    storage_opt: # Supported only for xfs
+#      size: "20G"
     environment:
       DOWNLOADER_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
       UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
@@ -98,7 +100,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - SETUID # Needed to change the user - beacuse of gosu - beacuse of volumes
+      - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
 
   monitor:
@@ -137,7 +139,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - SETUID # Needed to change the user - beacuse of gosu - beacuse of volumes
+      - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
 
   web:
@@ -235,11 +237,15 @@ volumes:
   download_volume:
     driver: local
     driver_opts:
-      o: "size=20G"
+      device: tmpfs
+      type: tmpfs
+      o: "size=30G"
   upload_volume:
     driver: local
     driver_opts:
-      o: "size=20G"
+      device: tmpfs
+      type: tmpfs
+      o: "size=30G"
   opensearch_data:
 
 networks:
