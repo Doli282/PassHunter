@@ -87,6 +87,7 @@ services:
     volumes:
       - download_volume:/data/downloads
       - upload_volume:/data/uploads
+    mem_limit: "2g"
     environment:
       DOWNLOADER_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
       UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
@@ -232,7 +233,13 @@ services:
 volumes:
   postgres_data:
   download_volume:
+    driver: local
+    driver_opts:
+      o: "size=20G"
   upload_volume:
+    driver: local
+    driver_opts:
+      o: "size=20G"
   opensearch_data:
 
 networks:
