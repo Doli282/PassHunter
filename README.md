@@ -28,6 +28,7 @@ cd BP-application
    5. For the Downloader module, register a new bot by Telegram [@BotFather](https://t.me/botfather) and get the BOT TOKEN.
    6. Add the Downloader bot to channels from which files shall be downloaded.
    7. Add channel IDs and to Forwarder's `config.py`.
+   8. Launch Forwarder for the first time to enter phone number and authenticate. (Save the session file on the host to preserve it across startups.)
 
 4. Set up a mail server
    - E.g., when using Gmail SMTP server, use gmail account and [generate password](https://myaccount.google.com/apppasswords) for the application.
