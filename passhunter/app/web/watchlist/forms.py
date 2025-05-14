@@ -18,6 +18,6 @@ class WatchlistForm(FlaskForm):
                                                                message='The maximal length of accepted input is 255 characters.'),
                                             Email(message='Input must adhere to email structure.')],
                        description='Email address to send alerts to.')
-    send_alerts = BooleanField('Mail Alerts', default=True,
+    send_alerts = BooleanField('Email Alerts', default=True,
                                description='Whether to send email alerts for this watchlist.')
     submit = SubmitField('Save')
