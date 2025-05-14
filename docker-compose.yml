@@ -14,9 +14,9 @@ services:
       - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
     networks:
       - hunter-network
-    ports:
-      - "5672:${RABBIT_PORT}"
-      - "15672:15672"
+#    ports:
+#      - "5672:${RABBIT_PORT}"
+#      - "15672:15672"
     healthcheck:
       # Health check according to the documentation: https://www.rabbitmq.com/docs/monitoring#health-checks
       test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
@@ -139,8 +139,8 @@ services:
       #- ./postgres/data:/var/lib/postgresql/data/
     networks:
       - hunter-network
-    ports:
-      - "5432:${POSTGRES_PORT}"
+#    ports:
+#      - "5432:${POSTGRES_PORT}"
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
@@ -173,8 +173,8 @@ services:
         hard: 65536
     networks:
       - hunter-network
-    ports:
-      - "9200:${OPENSEARCH_PORT}"
+#    ports:
+#      - "9200:${OPENSEARCH_PORT}"
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     healthcheck:
