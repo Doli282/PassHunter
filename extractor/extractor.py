@@ -49,7 +49,7 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
     archive_path = os.path.join(archive_dir, archive_name)
 
     # Create a temporary directory to extract the archive to.
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors = True) as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors = True, dir=DOWNLOAD_PATH) as tmpdir:
         try:
             # Check if the archive really is a valid archive (according to the used tools).
             if not patoolib.is_archive(archive_path):
