@@ -148,7 +148,7 @@ def get_alert_by_id(alert_id: int) -> Alert:
         Alert.id == alert_id,
         Watchlist.account_id == current_user.id
     )
-    return db.one_or_404(query)
+    return db.first_or_404(query)
 
 def change_alert_state(alert_id: int) -> Alert:
     """

@@ -58,7 +58,7 @@ def get_by_id(watchlist_id: int) -> Watchlist:
         404 Not Found: If no Watchlist is found for the given ID.
     """
     query = db.select(Watchlist).filter(and_(Watchlist.id == watchlist_id, Watchlist.account_id == current_user.id))
-    return db.one_or_404(query)
+    return db.first_or_404(query)
 
 
 def create(form: WatchlistForm, user: Account) -> Watchlist:
