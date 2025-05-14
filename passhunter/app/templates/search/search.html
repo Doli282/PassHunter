@@ -33,7 +33,7 @@
         {% for file, matches in results.items() %}
             <li>{{ file }}<ul>
             {% for match in matches %}
-                <li>{{ match }}</li>
+                <li>{{ match|e }}</li>
             {% endfor %}
             </ul></li>
         {% endfor %}

@@ -27,8 +27,6 @@ def create_app():
     # Initialize Flask-Login
     login.init_app(app)
     login.login_view = 'auth.login'
-    # TODO look at other security settings
-    # https://flask-login.readthedocs.io/en/latest/
     login.session_protection = 'strong'
 
     # Register functions into jinja templates
