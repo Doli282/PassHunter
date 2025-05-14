@@ -15,9 +15,9 @@
         <dd>{{ watchlist.description }}</dd>
         <dt>Status</dt>
         <dd>{{ watchlist.print_active() }}</dd>
-        <dt>Notification Email</dt>
+        <dt>Notification email address</dt>
         <dd>{{ watchlist.email|default('<i>Not defined</i>') }}</dd>
-        <dt>Email Alerts</dt>
+        <dt>Email alerts</dt>
         <dd>{{ watchlist.print_send_alerts() }}</dd>
     </dl>
     {# Links for modifying the watchlist #}
