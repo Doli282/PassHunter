@@ -13,17 +13,19 @@ pip install -r requirements.txt
 source: https://docs.telethon.dev/en/stable/developing/philosophy.html
 
 ### Telegram Account
-Register the Telegram application and obtain API ID on https://docs.telethon.dev/en/stable/basic/signing-in.html.
+Register the Telegram application and obtain API ID. Based on https://docs.telethon.dev/en/stable/basic/signing-in.html.
 1. Login on https://my.telegram.org/.
 2. Click API Development Tools.
 3. Create a new application. Fill in the details.
-4. Get API TOKEN and API HASH
+4. Get API TOKEN and API HASH.
 
 Register a new bot by Telegram [@BotFather](https://t.me/botfather) and get the BOT TOKEN.
 
 The telegram service may want an authentication during the first launch when a BOT TOKEN was not provided.
 Then a `XXX.session` is created and used. 
-However, a better results were observed with the use of a BOT TOKEN.
+However, better results were observed with the use of a BOT TOKEN.
+
+Add the bot to the channel from which it should download files.
 
 ## Configuration
 

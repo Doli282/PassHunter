@@ -13,11 +13,11 @@ pip install -r requirements.txt
 source: https://docs.telethon.dev/en/stable/developing/philosophy.html
 
 ### Telegram Account
-Register the Telegram application and obtain API ID on https://docs.telethon.dev/en/stable/basic/signing-in.html.
+Register the Telegram application and obtain API ID. Based on https://docs.telethon.dev/en/stable/basic/signing-in.html.
 1. Login on https://my.telegram.org/.
 2. Click API Development Tools.
 3. Create a new application. Fill in the details.
-4. Get API TOKEN and API HASH
+4. Get API TOKEN and API HASH.
 
 #### Authentication
 
