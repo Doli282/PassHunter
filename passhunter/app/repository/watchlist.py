@@ -5,7 +5,7 @@ from flask_sqlalchemy.pagination import Pagination
 from sqlalchemy import and_, Select
 
 from app import db
-from models import Account, Domain, Watchlist
+from models import Account, Watchlist
 from app.web.watchlist.forms import WatchlistForm
 
 
@@ -41,7 +41,7 @@ def get_page(page: int = 1) -> Pagination:
     Returns:
         Pagination: Paginated Watchlists.
     """
-    query = _select_watchlists_for_user(current_user)
+    query = _select_watchlists_for_user(current_user).order_by(Watchlist.id)
     return db.paginate(select=query, page=page, max_per_page=current_app.config['PER_PAGE'])
 
 
