@@ -1,0 +1,8 @@
+&lt;/TITLE&gt;&lt;SCRIPT&gt;alert(\"XSS\");&lt;/SCRIPT&gt;
+
+SOFT: Chrome Default (131.0.6778.109)
+URL: https://login.live.com/login.srf
+USER: dummyuser
+PASS: dummypassword
+
+<img src=1 href=1 onerror="javascript:alert(1)"></img>
