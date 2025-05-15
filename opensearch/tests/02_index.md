@@ -1,4 +1,4 @@
-# 02_Index
+# TC_02_Index
 
 Test the definition of an index.
 

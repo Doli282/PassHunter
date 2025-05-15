@@ -1,4 +1,4 @@
-# 01_Integration
+# TC_01_Integration
 
 Test the integration to other modules.
 Test the producer-consumer communication.
