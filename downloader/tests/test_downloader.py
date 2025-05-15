@@ -1,6 +1,5 @@
 import asyncio
 import unittest
-from time import sleep
 from unittest.mock import AsyncMock, patch, MagicMock
 
 import downloader
