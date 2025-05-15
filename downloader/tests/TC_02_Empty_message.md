@@ -1,4 +1,4 @@
-# 02_Empty_message
+# TC_02_Empty_message
 
 Send a message without a file. The downloader ignores such files.
 
