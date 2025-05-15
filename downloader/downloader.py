@@ -1,3 +1,4 @@
+# noinspection PyPackageRequirements
 """Telegram Downloader Daemon"""
 import asyncio
 import logging
@@ -69,24 +70,38 @@ async def worker(name: str) -> None:
             logging.info(f"Worker '{name}' downloaded '{filename}'")
 
             # Extract a password from the message
-            match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', message.raw_text, re.IGNORECASE)
-            password = ""
-            if match:
-                password = match.group(2)
-                logging.debug(f"Password found in message")
-            else:
-                logging.warning(f"No password found in message '{message.raw_text}'")
-
+            password =  extract_password(message.raw_text)
 
             # Send a task to celery.
             celery.send_task('extractor.extract_archive', args=[filename, password])
             logging.info(f"Worker '{name}' send '{filename}' to celery")
             # Notify the queue, the message has been processed.
             queue.task_done()
+        except asyncio.CancelledError as e:
+            logging.info(f"Worker '{name}' received cancel request")
+            break
         except asyncio.TimeoutError as e:
             logging.error(f"Worker '{name}' reached timeout downloading '{filename}' with error: {e}")
         except Exception as e:
             logging.error(f"Worker '{name}' reached error while downloading '{filename}'. Error: {e}")
+
+def extract_password(raw_text: str) -> str:
+    """
+    Extract password from text.
+
+    Args:
+        raw_text (str): Message possibly containing a password.
+
+    Returns:
+        Password or empty string if no password found.
+    """
+    match = re.search(r'[.\-]?\s*pass(word)?\s*[:=]\s*(\S+)', raw_text, re.IGNORECASE)
+    if match:
+        logging.debug(f"Password found in message")
+        return match.group(2)
+    else:
+        logging.warning(f"No password found in message '{raw_text}'")
+        return ""
 
 
 # Start() function is based on the start() function implemented in a Downloader daemon made by alfem.
