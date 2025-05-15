@@ -1,4 +1,5 @@
 """OpenSearch client connection"""
+import logging
 import os
 from typing import Any
 
@@ -7,7 +8,7 @@ from opensearchpy import OpenSearch
 
 class Client(OpenSearch):
     """Custom client for OpenSearch with added shortcut functions."""
-    def __init__(self, pipeline_id: str = 'attachment_pipeline', index_id: str = 'infostealers_classic'):
+    def __init__(self, pipeline_id: str = None, index_id: str = None):
         """
         Initialize the OpenSearch client.
 
@@ -25,10 +26,10 @@ class Client(OpenSearch):
             ssl_show_warn = False,
         )
         # Create the ingest pipeline
-        self.pipeline_id = pipeline_id
+        self.pipeline_id = pipeline_id if pipeline_id else os.getenv("OPENSEARCH_PIPELINE_ID", "test_pipeline")#, "attachment_pipeline")
         self._create_index_pipeline()
         # Set and create the index
-        self.index_id = index_id
+        self.index_id = index_id if index_id else os.getenv("OPENSEARCH_INDEX_ID", "test_index")#, "infostealers_classic")
         if not self.indices.exists(index=self.index_id):
             self._create_index()
 
@@ -123,6 +124,7 @@ class Client(OpenSearch):
                     }
                 }
             }
+        logging.debug(f"creating index {self.index_id}")
         return self.indices.create(index=self.index_id, body=index_body)
 
     def _create_index_pipeline(self) -> Any:
@@ -163,6 +165,7 @@ class Client(OpenSearch):
                 }
             ]
         }
+        logging.debug(f"putting pipieline {self.pipeline_id}")
         return self.ingest.put_pipeline(id=self.pipeline_id, body=pipeline_body)
 
     def _prepare_document(self, encoded_data: str, filename: str, uploaded_at: str) -> dict:

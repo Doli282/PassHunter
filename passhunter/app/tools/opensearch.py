@@ -5,7 +5,7 @@ from opensearchpy import OpenSearch
 
 class Client(OpenSearch):
     """Custom client for OpenSearch with added shortcut functions."""
-    def __init__(self, pipeline_id: str = 'attachment_pipeline', index_id: str = 'infostealers_classic'):
+    def __init__(self, pipeline_id: str = None, index_id: str = None):
         """
         Initialize the OpenSearch client.
 
@@ -23,9 +23,9 @@ class Client(OpenSearch):
             ssl_show_warn = False,
         )
         # Set the ingest pipeline
-        self.pipeline_id = pipeline_id
+        self.pipeline_id = pipeline_id if pipeline_id else os.getenv("OPENSEARCH_PIPELINE_ID", "attachment_pipeline")
         # Set the index
-        self.index_id = index_id
+        self.index_id = index_id if index_id else os.getenv("OPENSEARCH_INDEX_ID", "infostealers_classic")
 
     def search_term(self, search_term: str) -> tuple[int, dict[list[str]]]:
         """
