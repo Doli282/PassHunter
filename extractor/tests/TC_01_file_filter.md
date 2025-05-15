@@ -1,4 +1,4 @@
-# 01_File_filter
+# TC_01_File_filter
 
 Test filtering files.
 The filter checks filenames against a list of keywords
