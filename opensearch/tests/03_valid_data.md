@@ -1,4 +1,4 @@
-# 03_Valid_data
+# TC_03_Valid_data
 
 Test upload, ingestion and search of a test dataset.
 
@@ -117,4 +117,10 @@ The result highlights fields with the expanded searched string.
 }
 ```
 
+## Cleanup
+
+Remove the test document.
+```shell
+curl -XDELETE -k -u "${OPENSEARCH_USER}:${OPENSEARCH_ADMIN_PASSWORD}" "https://${OPENSEARCH_HOST}:${OPENSEARCH_PORT}/${index}/my_index/_doc/987654321"
+```
 
