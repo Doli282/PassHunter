@@ -5,6 +5,9 @@ from a user defining a watchlist on one end, data downloaded on the other end, a
 
 ## Preconditions
 
+- prepared test environment
+  - index and ingestion pipeline in OpenSearch
+  - database with defined user and watchlist
 - operational modules
 - interconnectivity between modules
 - Telegram channel monitored by Forwarder
@@ -28,7 +31,7 @@ PASS: dummypassword
 ## Steps
 
 1. Create a user in the web application.
-2. Create a watchlist and define a domain in the web GUI. Use a monitored string, that is (or is not) matched to the test data.
+2. Create a watchlist and define a domain in the web GUI. Use a monitored string, that is matched to the test data.
 3. Set email alerts for the watchlist.
 4. Upload the dataset to the monitored Telegram channel.
 
