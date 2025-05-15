@@ -71,7 +71,7 @@ def upload_file(file_path: str, upload_time: str) -> bool:
 
     # If the data could not be read, return False
     if not encoded_data:
-        logging.error("Could not read data from file")
+        logging.error(f"Could not read data from file '{file_path}'")
         return False
 
     # Index the document using the pipeline
@@ -97,8 +97,10 @@ def upload_bulk(directory_path: str, upload_time: str) -> None:
     """
     # List of actions to be taken care of during the API call to OpenSearch.
     actions = []
+    i = 0
     # Iterate over all files in the folder.
     for file in os.listdir(directory_path):
+        i += 1
         try:
             file_path = os.path.join(directory_path, file)
 
@@ -114,7 +116,7 @@ def upload_bulk(directory_path: str, upload_time: str) -> None:
 
             # If the data could not be read, return False.
             if not encoded_data:
-                logging.error("Could not read data from file")
+                logging.error(f"Could not read data from file '{file_path}'")
                 continue
 
             # Save the file to the database
@@ -124,14 +126,35 @@ def upload_bulk(directory_path: str, upload_time: str) -> None:
         except Exception as e:
             logging.error(f"Error uploading file '{file}': {e}")
             continue
-    # Perform the bulk upload.
+
+        # Perform the bulk upload.
+        if i % 25 == 0:
+            upload_bulk_helper(actions, i)
+            i = 0
+            actions = []
+
+    # Perform the bulk upload for the last time
+    upload_bulk_helper(actions, i)
+
+def upload_bulk_helper(actions: list[dict] = None, amount: int = 0) -> None:
+    """
+    Perform the bulk upload.
+
+    Args:
+        actions (list[dict]): List of actions to be taken care of during the API call to OpenSearch.
+        amount (int): Number of actions.
+    Returns:
+        None
+    """
+    if not actions:
+        return
     success = 0
     try:
-        success, _ = helpers.bulk(opensearch, actions, raise_on_error=True, request_timeout=60)
+        success, _ = helpers.bulk(opensearch, actions, stats_only=True, raise_on_error=False, request_timeout=600)
     except helpers.BulkIndexError:
         logging.error(f"Error during bulk indexing")
     if success != len(actions):
-        logging.error(f"Not all documents were indexed. Success rate: ({success}/{len(actions)})")
+        logging.error(f"Not all documents were indexed. Success rate: ({success}/{amount})")
     else:
         logging.info(f"Successfully uploaded {success} documents.")
 

@@ -126,6 +126,8 @@ services:
       OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
       OPENSEARCH_USER: "${OPENSEARCH_USER}"
       OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
+      OPENSEARCH_PIPELINE_ID: "${OPENSEARCH_PIPELINE_ID}"
+      OPENSEARCH_INDEX_ID: "${OPENSEARCH_INDEX_ID}"
       UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
       MAIL_SERVER: "${MAIL_SERVER}"
       MAIL_PORT: "${MAIL_PORT}"
@@ -160,8 +162,12 @@ services:
       OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
       OPENSEARCH_USER: "${OPENSEARCH_USER}"
       OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
+      OPENSEARCH_PIPELINE_ID: "${OPENSEARCH_PIPELINE_ID}"
+      OPENSEARCH_INDEX_ID: "${OPENSEARCH_INDEX_ID}"
     depends_on:
       db:
+        condition: service_healthy
+      opensearch:
         condition: service_healthy
     restart: unless-stopped
     security_opt:
