@@ -72,6 +72,7 @@ services:
     cap_add:
       - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
+      - CHOWN
 
   extractor:
     container_name: extractor
@@ -102,6 +103,7 @@ services:
     cap_add:
       - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
+      - CHOWN
 
   monitor:
     container_name: monitor
@@ -143,6 +145,7 @@ services:
     cap_add:
       - SETUID # Needed to change the user - because of gosu - because of volumes
       - SETGID
+      - CHOWN
 
   web:
     container_name: web
