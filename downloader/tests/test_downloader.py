@@ -40,7 +40,7 @@ class TestDownload(unittest.IsolatedAsyncioTestCase):
     @patch("downloader.queue.task_done", new_callable=MagicMock)
     @patch("downloader.queue.get", new_callable=AsyncMock)
     async def test_worker_password(self, mock_queue_get, mock_queue_task, mock_celery, mock_config, mock_logger = None):
-        """Test worker function with valid password in the message."""
+        """Test worker function with a valid password in the message."""
         # Set up mocks
         mock_message = AsyncMock()
         mock_message.file.name = "test.zip"
@@ -65,7 +65,7 @@ class TestDownload(unittest.IsolatedAsyncioTestCase):
     @patch("downloader.celery")
     @patch("downloader.queue", new_callable=AsyncMock)
     async def test_worker_no_password(self, mock_queue, mock_celery, mock_config, mock_logger=None):
-        """Test worker function with invalid password in the message."""
+        """Test worker function with an invalid password in the message."""
         # Set up mocks
         mock_message = AsyncMock()
         mock_message.file.name = "test.zip"
@@ -90,8 +90,8 @@ class TestDownload(unittest.IsolatedAsyncioTestCase):
     @patch("downloader.client")
     @patch("downloader.Config")
     @patch("downloader.worker")
-    async def test_start_workers_and_cleanup(self, mock_worker, mock_config, mock_client, mock_logger=None):
-        """Test start() launches correct number of workers and handles cleanup."""
+    async def test_start(self, mock_worker, mock_config, mock_client, mock_logger=None):
+        """Test how Downloader handles workers"""
         # Prepare mocks
         worker_count = 2
         mock_config.WORKER_COUNT = worker_count
@@ -99,8 +99,10 @@ class TestDownload(unittest.IsolatedAsyncioTestCase):
         mock_client.disconnect = MagicMock()
         mock_worker.side_effect = asyncio.CancelledError
 
-        # This should create 3 worker tasks and attempt cleanup
+        # Run the tested function
         await downloader.start()
+
+        # Assert that the correct number of workers was created
         self.assertEqual(mock_worker.call_count, worker_count)
         mock_client.run_until_disconnected.assert_awaited_once()
         mock_client.disconnect.assert_called_once()
