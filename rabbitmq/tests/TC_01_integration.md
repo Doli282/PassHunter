@@ -14,6 +14,8 @@ There are two producer-consumer pairs:
 1. Downloader - Extractor
 2. Extractor - Monitor
 
+Use the console on http://localhost:15672/ for debugging and monitoring.
+
 ## Expected Result
 
 The pair Downloader - Extractor:
