@@ -45,3 +45,6 @@ class ConfigCelery(object):
 
     # auto-create any queue routed-to
     task_create_missing_queues = True
+
+    # seconds (5 minutes)
+    broker_heartbeat = 300

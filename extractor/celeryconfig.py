@@ -35,6 +35,9 @@ class ConfigUploader(Object):
     # auto-create any queue routed-to
     task_create_missing_queues = True
 
+    # seconds (5 minutes)
+    broker_heartbeat = 300
+
 class ConfigDownloader(Object):
     """Configuration class for downloader vhost."""
     broker_url = os.getenv("DOWNLOADER_BROKER_URL")
@@ -51,3 +54,6 @@ class ConfigDownloader(Object):
 
     # auto-create any queue routed-to
     task_create_missing_queues = True
+
+    # seconds (5 minutes)
+    broker_heartbeat = 300
