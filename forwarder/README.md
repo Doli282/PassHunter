@@ -1,7 +1,6 @@
 # Forwarder - Telegram Daemon
 
-This daemon forwards messages that contain documents to specified channels.
-
+This daemon forwards messages that contain documents to the specified channel.
 
 ## Installation
 
@@ -14,12 +13,23 @@ pip install -r requirements.txt
 source: https://docs.telethon.dev/en/stable/developing/philosophy.html
 
 ### Telegram Account
-Register the Telegram application and obtain API ID on https://docs.telethon.dev/en/stable/basic/signing-in.html.
+Register the Telegram application and obtain API ID. Based on https://docs.telethon.dev/en/stable/basic/signing-in.html.
 1. Login on https://my.telegram.org/.
 2. Click API Development Tools.
 3. Create a new application. Fill in the details.
-4. Get API TOKEN and API HASH
+4. Get API TOKEN and API HASH.
 
+#### Authentication
+
+During the first lunch an authentication is required when a BOT TOKEN was not provided.
+Later a `XX.session` file is created and used for repeated login.
+Authentication with a phone number and a code must be manual.
+The authentication code is sent during verification to another device (to a phone or another client).
+
+#### BOT vs. Phone
+
+When using a BOT TOKEN it can forward messages only from channels where the bot is a member.
+When using a phone number, it can forward from any channels defined in the list.
 
 ## Configuration
 
@@ -48,4 +58,13 @@ Change the values for IDs of channels intended as a source, or as a target.
 Run:
 ```shell
 python3 forwarder.py
+```
+
+## Testing
+
+Test scenarios are described in the /test/ directory.
+
+To launch the automated test, run the following command from the module root directory:
+```shell
+python3 -m unittest tests/test_forward.py
 ```

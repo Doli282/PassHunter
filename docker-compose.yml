@@ -2,42 +2,275 @@
 #name: 'passhunter'
 
 services:
-#  web:
-#    container_name: web
-#    hostname: web
-#    build:
-#      context: ./passhunter
-#      dockerfile: Dockerfile
-#    networks:
-#      - hunter-network
-#    ports:
-#      - "5000:5000"
-#    env_file:
-#      - ./passhunter/.env
-#    depends_on:
-#      db:
-#        condition: service_healthy
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: "${RABBIT_HOST}"
+    image: docker.io/library/rabbitmq:4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: app_password_main
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    mem_limit: "1G"
+    cpus: 1
+    networks:
+      - hunter-network
+    ports:
+#      - "5672:${RABBIT_PORT}"
+#      - "15672:15672"
+    healthcheck:
+      # Health check according to the documentation: https://www.rabbitmq.com/docs/monitoring#health-checks
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+
+  forwarder:
+    container_name: forwarder
+    hostname: forwarder
+    build:
+      context: ./forwarder
+      dockerfile: Dockerfile
+    networks:
+      - hunter-network
+    mem_limit: "256m"
+    cpus: 0.2
+    environment:
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
+      LOGGING_LEVEL: "${LOGGING_LEVEL}"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+
+  downloader:
+    container_name: downloader
+    hostname: downloader
+    build:
+      context: ./downloader
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - hunter-network
+    volumes:
+      - download_volume:/data
+    mem_limit: "1G"
+    cpus: 0.5
+    environment:
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
+      CELERY_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
+      LOGGING_LEVEL: "${LOGGING_LEVEL}"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID # Needed to change the user - because of gosu - because of volumes
+      - SETGID
+      - CHOWN
+
+  extractor:
+    container_name: extractor
+    hostname: extractor
+    build:
+      context: ./extractor
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - hunter-network
+    volumes:
+      - download_volume:/data/downloads
+      - upload_volume:/data/uploads
+    mem_limit: "1G"
+    cpus: 0.5
+#    storage_opt: # Supported only for xfs
+#      size: "20G"
+    environment:
+      DOWNLOADER_BROKER_URL: "amqp://${RABBIT_USER_DOWNLOAD}:${RABBIT_PASS_DOWNLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/downloads_vhost"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
+      LOGGING_LEVEL: "${LOGGING_LEVEL}"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID # Needed to change the user - because of gosu - because of volumes
+      - SETGID
+      - CHOWN
+
+  monitor:
+    container_name: monitor
+    hostname: monitor
+    build:
+      context: .
+      dockerfile: monitor/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+         condition: service_healthy
+      opensearch:
+         condition: service_healthy
+    networks:
+      - hunter-network
+    volumes:
+      - upload_volume:/data
+    mem_limit: "2G"
+    cpus: 1
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+      OPENSEARCH_HOST: "${OPENSEARCH_HOST}"
+      OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
+      OPENSEARCH_USER: "${OPENSEARCH_USER}"
+      OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
+      OPENSEARCH_PIPELINE_ID: "${OPENSEARCH_PIPELINE_ID}"
+      OPENSEARCH_INDEX_ID: "${OPENSEARCH_INDEX_ID}"
+      UPLOADER_BROKER_URL: "amqp://${RABBIT_USER_UPLOAD}:${RABBIT_PASS_UPLOAD}@${RABBIT_HOST}:${RABBIT_PORT}/uploads_vhost"
+      MAIL_SERVER: "${MAIL_SERVER}"
+      MAIL_PORT: "${MAIL_PORT}"
+      MAIL_USERNAME: "${MAIL_USERNAME}"
+      MAIL_PASSWORD: "${MAIL_PASSWORD}"
+      EMAIL_SENDER: "${EMAIL_SENDER}"
+      LOGGING_LEVEL: "${LOGGING_LEVEL}"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID # Needed to change the user - because of gosu - because of volumes
+      - SETGID
+      - CHOWN
+
+  web:
+    container_name: web
+    hostname: web
+    build:
+      context: .
+      dockerfile: passhunter/Dockerfile
+    networks:
+      - hunter-network
+    ports:
+      - "5000:5000"
+    mem_limit: "1G"
+    cpus: 0.5
+    environment:
+      SECRET_KEY: "${WEB_SECRET_KEY}"
+      DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+      LOGGING_LEVEL: "${LOGGING_LEVEL}"
+      OPENSEARCH_HOST: "${OPENSEARCH_HOST}"
+      OPENSEARCH_PORT: "${OPENSEARCH_PORT}"
+      OPENSEARCH_USER: "${OPENSEARCH_USER}"
+      OPENSEARCH_ADMIN_PASSWORD: "${OPENSEARCH_ADMIN_PASSWORD}"
+      OPENSEARCH_PIPELINE_ID: "${OPENSEARCH_PIPELINE_ID}"
+      OPENSEARCH_INDEX_ID: "${OPENSEARCH_INDEX_ID}"
+    depends_on:
+      db:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
 
   db:
     container_name: db
-    hostname: db
+    hostname: "${POSTGRES_HOST}"
     image: docker.io/library/postgres:17
+    user: "postgres:postgres"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       #- ./postgres/data:/var/lib/postgresql/data/
     networks:
       - hunter-network
-    env_file:
-      - ./postgres/.env
+#    ports:
+#      - "5432:${POSTGRES_PORT}"
+    mem_limit: "1G"
+    cpus: 0.5
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -t 1" ]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 5s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+
+  opensearch:
+    container_name: opensearch
+    hostname: "${OPENSEARCH_HOST}"
+    build:
+      context: opensearch
+      dockerfile: Dockerfile
+    environment:
+      - node.name=opensearch
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD} # Sets the demo admin user password when using demo configuration, required for OpenSearch 2.12 and higher
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    networks:
+      - hunter-network
+#    ports:
+#      - "9200:${OPENSEARCH_PORT}"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    mem_limit: "4G"
+    cpus: 1
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -k -XGET https://localhost:${OPENSEARCH_PORT}/_cluster/health -u ${OPENSEARCH_USER}:${OPENSEARCH_ADMIN_PASSWORD} || exit 1" ]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
 
 volumes:
   postgres_data:
+  download_volume:
+    driver: local
+    driver_opts:
+      device: tmpfs
+      type: tmpfs
+      o: "size=30G"
+  upload_volume:
+    driver: local
+    driver_opts:
+      device: tmpfs
+      type: tmpfs
+      o: "size=30G"
+  opensearch_data:
 
 networks:
   hunter-network:

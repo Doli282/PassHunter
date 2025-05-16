@@ -3,37 +3,37 @@
 {% block title %}Register - PassHunter{% endblock %}
 
 {% block content %}
-    <h1>Log In</h1>
-    <form action="" method="post">
+    <h1>Register</h1>
+    <form action="" method="post" class="form-container">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.email.label }}
-            {{ form.email }}
+            {{ form.email.label(title="Email address used to log in.") }}
+            {{ form.email(title="Email address used to log in.", placeholder="ja@gmail.com") }}
             {% for error in form.email.errors %}
                 <span>{{ error }}</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.name.label }}
-            {{ form.name }}
+            {{ form.name.label(title="State your name.") }}
+            {{ form.name(title="State your name.", placeholder="Chuck P.") }}
             {% for error in form.name.errors %}
                 <span>{{ error }}</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.password.label }}
-            {{ form.password }}
+            {{ form.password.label(title="Strong password.") }}
+            {{ form.password(title="Strong password.", placeholder="*****") }}
             {% for error in form.password.errors %}
                 <span>{{ error }}</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.password_confirm.label }}
-            {{ form.password_confirm }}
+            {{ form.password_confirm.label(title="Confirm the strong password once more.") }}
+            {{ form.password_confirm(title="Confirm the strong password once more.", placeholder="*****") }}
             {% for error in form.password_confirm.errors %}
                 <span>{{ error }}</span>
             {% endfor %}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p>{{ form.submit(class="btn btn-primary") }}</p>
     </form>
 {% endblock %}

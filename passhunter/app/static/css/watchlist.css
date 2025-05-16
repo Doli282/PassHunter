@@ -18,19 +18,19 @@
 }
 
 .watchlist-card h2 {
-    color: var(--primary-color);
+    color: var(--color-primary);
     margin-bottom: var(--spacing-sm);
 }
 
 .watchlist-card .description {
-    color: var(--text-light);
+    color: var(--color-text-light);
     margin-bottom: var(--spacing-md);
     flex-grow: 1;
 }
 
 .watchlist-stats {
     margin-bottom: var(--spacing-md);
-    color: var(--text-light);
+    color: var(--color-text-light);
     font-size: var(--font-size-sm);
 }
 
@@ -43,7 +43,7 @@
 .empty-state {
     text-align: center;
     padding: var(--spacing-xl);
-    color: var(--text-light);
+    color: var(--color-text-light);
     grid-column: 1 / -1;
 }
 
@@ -56,34 +56,34 @@
 }
 
 .watchlist-detail-header h1 {
-    color: var(--primary-color);
+    color: var(--color-primary);
     margin-bottom: var(--spacing-sm);
 }
 
 .watchlist-detail-header .description {
-    color: var(--text-light);
+    color: var(--color-text-light);
 }
 
 .domains-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--white);
-    border-radius: 8px;
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
 }
 
 .domains-table th,
 .domains-table td {
     padding: var(--spacing-md);
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .domains-table th {
-    background-color: var(--primary-color);
-    color: var(--white);
-    font-weight: bold;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-weight: var(--font-weight-bold);
 }
 
 .domains-table tr:last-child td {
@@ -98,22 +98,22 @@
 .status-badge {
     display: inline-block;
     padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    font-weight: bold;
+    font-weight: var(--font-weight-bold);
 }
 
 .status-badge.active {
-    background-color: #2ecc71;
-    color: var(--white);
+    background-color: var(--color-success);
+    color: var(--color-white);
 }
 
 .status-badge.inactive {
-    background-color: #e74c3c;
-    color: var(--white);
+    background-color: var(--color-error);
+    color: var(--color-white);
 }
 
 .status-badge.pending {
-    background-color: #f1c40f;
-    color: var(--white);
+    background-color: var(--color-warning);
+    color: var(--color-white);
 }

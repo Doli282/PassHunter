@@ -8,14 +8,21 @@
 
 {% block content %}
     <h1>Watchlists</h1>
-    <p>Here you can manage your watchlists.</p>
-    <a href="{{ url_for('watchlist.create_watchlist') }}">Create New Watchlist</a>
+    <p>
+        Here you can see a list of your watchlists.
+        A watchlist is a collection of monitored strings.
+        You can add new strings to the watchlist and receive alerts when they are found in leaks in the future.
+        Alert can be a notification in the web app, or it can be sent to an email address.
+        Underneath, there is a table with all your watchlists.
+    </p>
+    <p><a href="{{ url_for('watchlist.create_watchlist') }}" class="btn btn-primary">Create New Watchlist</a></p>
+        
     {% if pagination.items %}
         {# Table with individual watchlists #}
         <table>
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Watchlist name</th>
                     <th>Description</th>
                     <th>Status</th>
                     <th>Alerts</th>
@@ -27,7 +34,7 @@
                         <td><a href="{{ url_for('watchlist.view_watchlist', watchlist_id=watchlist.id) }}">{{ watchlist.name }}</a></td>
                         <td>{{ watchlist.description }}</td>
                         <td>{{ watchlist.print_active() }}</td>
-                        <td>##</td>
+                        <td>{{ alert_count(watchlist_id=watchlist.id) }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

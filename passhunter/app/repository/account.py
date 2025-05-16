@@ -3,7 +3,7 @@ from sqlalchemy import select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
-from app.models.account import Account
+from models.account import Account
 from app.web.auth.forms import RegistrationForm
 from app.web.profile.forms import EditAccountForm
 

@@ -4,12 +4,14 @@
 
 {% block content %}
     <h1>Profile information</h1>
-    <dl>
-        {% for key, value in current_user.account_info().items() %}
-            <dt>{{ key }}</dt>
-            <dd>{{ value }}</dd>
-        {% endfor %}
-    </dl>
-    <a href="{{ url_for('profile.edit') }}">Edit profile</a>
-    <a href="{{ url_for('profile.delete') }}">Delete profile</a>
+    <div class="definition-list-group">
+        <dl>
+            {% for key, value in current_user.account_info().items() %}
+                <dt>{{ key }}</dt>
+                <dd>{{ value|default("<i>Not defined</i>", true)|safe }}</dd>
+            {% endfor %}
+        </dl>
+        <a href="{{ url_for('profile.edit') }}" class="btn btn-primary">Edit profile</a>
+        <a href="{{ url_for('profile.delete') }}" class="btn btn-danger">Delete profile</a>
+    </div>
 {% endblock %}

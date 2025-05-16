@@ -10,45 +10,45 @@
         <h1>{{ title }} Watchlist</h1>
 
         {# Form to edit or to create a new watchlist #}
-        <form action="" method="POST">
+        <form action="" method="POST" class="form-container">
             {{ form.hidden_tag() }}
-            <p>
-                {{ form.name.label }}
-                {{ form.name }}
+            <p class="form-group">
+                {{ form.name.label(title="Name of the watchlist.") }}
+                {{ form.name(title="Name of the watchlist.", placeholder="Private Emails") }}
                 {% for error in form.name.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.description.label }}
-                {{ form.description }}
+            <p class="form-group">
+                {{ form.description.label(title="Custom description of the watchlist. It is only for you.") }}
+                {{ form.description(title="Custom description of the watchlist. It is only for you.", placeholder="Monitoring private emails") }}
                 {% for error in form.description.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.is_active.label }}
-                {{ form.is_active }}
+            <p class="form-group">
+                {{ form.is_active.label(title="Only active watchlists are monitored. Activate the watchlist to receive new alerts.") }}
+                {{ form.is_active(title="Only active watchlists are monitored. Activate the watchlist to receive new alerts.") }}
                 {% for error in form.is_active.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.email.label }}
-                {{ form.email }}
+            <p class="form-group">
+                {{ form.email.label(title="To which email address alerts will be sent.") }}
+                {{ form.email(title="To which email address alerts will be sent.", placeholder="hans@bauer.de") }}
                 {% for error in form.email.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.send_alerts.label }}
-                {{ form.send_alerts }}
+            <p class="form-group">
+                {{ form.send_alerts.label(title="Whether emails with alerts should be sent.") }}
+                {{ form.send_alerts(title="Whether emails with alerts should be sent.") }}
                 {% for error in form.send_alerts.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             </p>
-            <p>
-                {{ form.submit }}
+            <p class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
             </p>
         </form>
     {# Differentiate where to return based on action #}

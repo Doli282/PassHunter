@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% import "macros.html" as macros %}
+
+{% block title %}Alerts - PassHunter{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h1>Alerts</h1>
+<p>
+    List of all alerts regarding your monitored strings and watchlists.
+    To get more information, click on the alert.
+    When you solve the alert, mark it as registered.
+    You can also filter the alerts by status, date range, domain name, and watchlist name.
+</p>
+
+{# Following code (filter form) was created by Cursor IDE.
+AI model: Claude 3.7 Sonnet
+Prompt: Update the alert list template to include a filter form with fields for status, date range, domain name, and
+watchlist name #}
+<button class="btn btn-secondary mb-4" data-js data-toggle-trigger data-toggle-target="#filter-form-container"
+    data-toggle-text="Hide Filters" aria-expanded="false" aria-controls="filter-form-container">
+    Show Filters
+</button>
+
+<div id="filter-form-container">
+    <form action="" method="POST" class="form-container">
+        {{ filter_form.hidden_tag() }}
+        <div class="form-row">
+            <div class="form-group">
+                {{ filter_form.status.label(class="form-label") }}
+                {{ filter_form.status(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ filter_form.domain_name.label(class="form-label") }}
+                {{ filter_form.domain_name(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ filter_form.watchlist_name.label(class="form-label") }}
+                {{ filter_form.watchlist_name(class="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                {{ filter_form.date_from.label(class="form-label") }}
+                {{ filter_form.date_from(class="form-control") }}
+                {% for error in filter_form.date_from.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ filter_form.date_to.label(class="form-label") }}
+                {{ filter_form.date_to(class="form-control") }}
+                {% for error in filter_form.date_to.errors %}
+                <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group">
+            {{ filter_form.submit(class="btn btn-primary") }}
+            {{ filter_form.reset(class="btn btn-secondary") }}
+        </div>
+    </form>
+</div>
+
+{% if pagination.items %}
+{% include "alert/partial_alert_table.html" %}
+{{ macros.render_pagination(pagination, 'alert.list_alerts', **filter_values) }}
+{% else %}
+<p class="text-center text-light"><i>Good news! You do not have any alerts. ...Have you set up the watchlists
+        properly?</i></p>
+{% endif %}
+{% endblock %}
