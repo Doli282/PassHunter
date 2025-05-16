@@ -6,14 +6,13 @@ from unittest.mock import patch, MagicMock
 
 from monitor import search_for_domain
 
-
+@patch("monitor.opensearch")
 class TestSearchForDomain(unittest.TestCase):
     def setUp(self):
         self.mock_domain = MagicMock()
         self.mock_domain.name = "example.com"
         self.uploaded_at = datetime.now()
 
-    @patch("monitor.opensearch")
     def test_search_for_domain_success(self, mock_opensearch):
         """
         Test case for a successful search for a domain, ensuring proper hit count
@@ -38,7 +37,6 @@ class TestSearchForDomain(unittest.TestCase):
         self.assertListEqual(result[1]["file1.txt"], ["match1", "match2"])
         self.assertListEqual(result[1]["file2.txt"], ["match3"])
 
-    @patch("monitor.opensearch")
     def test_search_for_domain_no_hits(self, mock_opensearch):
         """
         Test case where no results are found for a domain search.
@@ -52,7 +50,6 @@ class TestSearchForDomain(unittest.TestCase):
         self.assertEqual(result[0], 0)
         self.assertEqual(result[1], {})
 
-    @patch("monitor.opensearch")
     def test_search_for_domain_invalid_uploaded_at(self, mock_opensearch):
         """
         Test case to verify search behavior with invalid 'uploaded_at' date formats.
@@ -66,7 +63,6 @@ class TestSearchForDomain(unittest.TestCase):
         self.assertEqual(result[0], 1)
         self.assertEqual(result[1], {})
 
-    @patch("monitor.opensearch")
     def test_search_for_domain_missing_highlight(self, mock_opensearch):
         """
         Test case where search results do not include a highlight field.
