@@ -52,3 +52,8 @@ python3 downloader.py
 ## Tests
 
 Tests scenarios are described in the /tests/ directory.
+To launch the automated test, run the following command from the module root directory:
+```shell
+python3 -m unittest tests/test_downloader.py
+```
+
