@@ -35,6 +35,9 @@ class ConfigUploader(Object):
     # auto-create any queue routed-to
     task_create_missing_queues = True
 
+    # seconds (5 minutes)
+    broker_heartbeat = 300
+
 class Config(object):
     """Miscellaneous configuration for the Monitor."""
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
