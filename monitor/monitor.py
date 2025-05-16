@@ -27,7 +27,7 @@ uploader = Celery('uploader')
 uploader.config_from_object(ConfigUploader)
 
 # OpenSearch client
-opensearch = Client()
+opensearch = None
 
 # Engine for connecting to the database.
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
@@ -77,7 +77,7 @@ def upload_file(file_path: str, upload_time: str) -> bool:
     # Index the document using the pipeline
     try:
         filename = os.path.basename(file_path)
-        opensearch.upload_file(encoded_data, filename, upload_time)
+        get_opensearch().upload_file(encoded_data, filename, upload_time)
         logging.debug(f"File '{filename}' uploaded successfully")
         return True
     except Exception as e:
@@ -122,7 +122,7 @@ def upload_bulk(directory_path: str, upload_time: str) -> None:
             # Save the file to the database
             create_file(file, digest)
             # Add the document upload to actions.
-            actions.append(opensearch.prepare_bulk_upload(encoded_data, file, upload_time))
+            actions.append(get_opensearch().prepare_bulk_upload(encoded_data, file, upload_time))
         except Exception as e:
             logging.error(f"Error uploading file '{file}': {e}")
             continue
@@ -150,7 +150,7 @@ def upload_bulk_helper(actions: list[dict] = None, amount: int = 0) -> None:
         return
     success = 0
     try:
-        success, _ = helpers.bulk(opensearch, actions, stats_only=True, raise_on_error=False, request_timeout=600)
+        success, _ = helpers.bulk(get_opensearch(), actions, stats_only=True, raise_on_error=False, request_timeout=600)
     except helpers.BulkIndexError:
         logging.error(f"Error during bulk indexing")
     if success != len(actions):
@@ -198,7 +198,7 @@ def search_for_domain(domain: 'Domain', uploaded_at: datetime.datetime = None) -
     """
     logging.debug(f"Searching for domain: '{domain.name}'")
     # Search for the domain with OpenSearch.
-    response = opensearch.search_term(domain.name, uploaded_at.isoformat() if isinstance(uploaded_at, datetime.datetime) else uploaded_at)
+    response = get_opensearch().search_term(domain.name, uploaded_at.isoformat() if isinstance(uploaded_at, datetime.datetime) else uploaded_at)
     logging.debug(f"Search response: {response}")
     # Check if the domain was found.
     # Save all matches
@@ -338,3 +338,9 @@ def send_email(receiver_address: str, domain_name: str, watchlist_name: str, det
         smtp.login(Config.SMTP_USERNAME, Config.SMTP_PASSWORD)
         smtp.send_message(message)
         return
+
+def get_opensearch():
+    global opensearch
+    if not opensearch:
+        opensearch = Client()
+    return opensearch

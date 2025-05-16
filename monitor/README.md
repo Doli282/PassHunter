@@ -76,3 +76,10 @@ MAIL_PASSWORD=...
 EMAIL_SENDER=no-reply@passhunter.com
 ```
 
+## Run tests
+
+Tests are in the `/tests/` directory.
+Run tests from the module's root directory in a virtual environment with the module's requirements.
+```shell
+python3 -m unittest discover tests
+```
