@@ -8,7 +8,7 @@
         <dl>
             {% for key, value in current_user.account_info().items() %}
                 <dt>{{ key }}</dt>
-                <dd>{{ value }}</dd>
+                <dd>{{ value|default("<i>Not defined</i>", true)|safe }}</dd>
             {% endfor %}
         </dl>
         <a href="{{ url_for('profile.edit') }}" class="btn btn-primary">Edit profile</a>
