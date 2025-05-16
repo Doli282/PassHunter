@@ -16,7 +16,7 @@ services:
     cpus: 1
     networks:
       - hunter-network
-    ports:
+#    ports:
 #      - "5672:${RABBIT_PORT}"
 #      - "15672:15672"
     healthcheck:
