@@ -339,7 +339,15 @@ def send_email(receiver_address: str, domain_name: str, watchlist_name: str, det
         smtp.send_message(message)
         return
 
-def get_opensearch():
+def get_opensearch() -> Client:
+    """
+    Get OpenSearch client.
+    Creates new connection if this is the first time.
+    Otherwise, returns the existing connection.
+
+    Returns:
+        OpenSearch client.
+    """
     global opensearch
     if not opensearch:
         opensearch = Client()
