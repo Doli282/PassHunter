@@ -54,7 +54,6 @@ def extract_archive(archive_name: str, archive_password: str, archive_dir: str =
             # Check if the archive really is a valid archive (according to the used tools).
             if not patoolib.is_archive(archive_path):
                 raise ValueError(f"Archive '{archive_name}' is not a valid archive")
-
             # Extract the entire archive to the temporary directory
             patoolib.extract_archive(archive_path, outdir=tmpdir, verbosity=-1, interactive=False, password=archive_password)
 
