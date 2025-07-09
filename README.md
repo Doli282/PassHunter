@@ -96,3 +96,13 @@ docker compose down
 ## Testing
 
 Tests are written in `tests/` directories across the application by each module.
+
+# Affiliation
+
+This application was developed as a part of a bachelor thesis.
+The thesis can be found here: https://dspace.cvut.cz/handle/10467/123420
+
+<img src="https://fit.cvut.cz/static/images/fit-cvut-logo-en.svg" alt="FIT CTU logo" height="200">
+
+This software was developed with the support of the **Faculty of Information Technology, Czech Technical University in Prague**.
+For more information, visit [fit.cvut.cz](https://fit.cvut.cz).
